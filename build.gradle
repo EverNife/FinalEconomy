@@ -1,0 +1,34 @@
+group 'br.com.finalcraft'
+version '1.0.1a'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+        dirs 'C:/Users/Petrus/Desktop/Meus/workshop/workshop/PublicLibs/Bukkit'
+    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+}
+
+dependencies {
+    compile "com.github.MilkBowl:VaultAPI:1.7"
+
+    compileOnly name: "EverNifeCore-1.3.3a"
+    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
