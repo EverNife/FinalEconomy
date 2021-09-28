@@ -46,12 +46,12 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public boolean hasAccount(String playerName, String worldName) {
-        return hasAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return hasAccount(playerName);
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer player, String worldName) {
-        return hasAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+        return hasAccount(player);
     }
 
     @Override
@@ -66,12 +66,12 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public double getBalance(String playerName, String world) {
-        return getBalance(PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return getBalance(playerName);
     }
 
     @Override
     public double getBalance(OfflinePlayer player, String world) {
-        return getBalance(PlayerController.getPDSection(player, FEPlayerData.class));
+        return getBalance(player);
     }
 
     @Override
@@ -86,12 +86,12 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public boolean has(String playerName, String worldName, double amount) {
-        return has(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        return has(playerName, amount);
     }
 
     @Override
     public boolean has(OfflinePlayer player, String worldName, double amount) {
-        return has(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return has(player, amount);
     }
 
     @Override
@@ -106,12 +106,12 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, String worldName, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        return withdrawPlayer(playerName, amount);
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, String worldName, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return withdrawPlayer(player, amount);
     }
 
     @Override
@@ -126,12 +126,12 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public EconomyResponse depositPlayer(String playerName, String worldName, double amount) {
-        return depositPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        return depositPlayer(playerName, amount);
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, String worldName, double amount) {
-        return depositPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return depositPlayer(player, amount);
     }
 
     @Override
@@ -178,11 +178,11 @@ public abstract class FinalEcoAbstract implements Economy {
 
     @Override
     public boolean createPlayerAccount(String playerName, String worldName) {
-        return createPlayerAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return createPlayerAccount(playerName);
     }
 
     @Override
     public boolean createPlayerAccount(OfflinePlayer player, String worldName) {
-        return createPlayerAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+        return createPlayerAccount(player);
     }
 }
