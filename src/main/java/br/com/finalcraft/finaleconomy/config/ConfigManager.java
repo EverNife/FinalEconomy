@@ -14,4 +14,5 @@ public class ConfigManager {
     public static void initialize(JavaPlugin instance){
         mainConfig = new Config(instance,"config.yml");
     }
+
 }
