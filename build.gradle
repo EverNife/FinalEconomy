@@ -2,6 +2,7 @@ group 'br.com.finalcraft'
 version '1.0.1a'
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
@@ -31,4 +32,29 @@ dependencies {
     compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "Petrus's Maven Repo"
+            url = "https://maven.petrus.dev"
+            credentials {
+                username = System.env.PETRUSMAVEN_ACTOR
+                password = System.env.PETRUSMAVEN_TOKEN
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        petrus(MavenPublication) {
+            artifactId rootProject.name.toString().toLowerCase()
+            from(components.java)
+            pom.withXml {
+                asNode().appendNode('url','https://petrus.dev')
+            }
+        }
+    }
 }
