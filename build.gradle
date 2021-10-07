@@ -15,7 +15,6 @@ tasks.withType(JavaCompile) {
 repositories {
     flatDir {
         dirs 'libs'
-        dirs 'C:/Users/Petrus/Desktop/Meus/workshop/workshop/PublicLibs/Bukkit'
     }
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -23,12 +22,22 @@ repositories {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
+    maven {
+        url = "https://maven.petrus.dev/private"
+        credentials {
+            username = System.env.PETRUSMAVEN_ACTOR
+            password = System.env.PETRUSMAVEN_TOKEN
+        }
+        authentication {
+            basic(BasicAuthentication)
+        }
+    }
 }
 
 dependencies {
     compile "com.github.MilkBowl:VaultAPI:1.7"
+    compile "br.com.finalcraft:EverNifeCore:1.3.3a"
 
-    compileOnly name: "EverNifeCore-1.3.3a"
     compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
@@ -37,7 +46,7 @@ dependencies {
 publishing {
     repositories {
         maven {
-            name = "Petrus's Maven Repo"
+            name = "PetrusRepo"
             url = "https://maven.petrus.dev"
             credentials {
                 username = System.env.PETRUSMAVEN_ACTOR
@@ -50,7 +59,6 @@ publishing {
     }
     publications {
         petrus(MavenPublication) {
-            artifactId rootProject.name.toString().toLowerCase()
             from(components.java)
             pom.withXml {
                 asNode().appendNode('url','https://petrus.dev')
