@@ -62,6 +62,9 @@ publishing {
             from(components.java)
             pom.withXml {
                 asNode().appendNode('url','https://petrus.dev')
+                asNode().dependencies.'*'.each() {
+                    it.parent().remove(it) //Remove all dependencies from pom file
+                }
             }
         }
     }
