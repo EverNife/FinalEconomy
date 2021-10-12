@@ -29,7 +29,6 @@ public class CMDBalanceTop {
             .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
             .setIncludeDate(true)
             .setIncludeTotalPlayers(true)
-            .setCooldown(5)
             .build();
 
     @FinalCMD(
