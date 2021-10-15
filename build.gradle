@@ -23,20 +23,14 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
     maven {
-        url = "https://maven.petrus.dev/private"
-        credentials {
-            username = System.env.PETRUSMAVEN_ACTOR
-            password = System.env.PETRUSMAVEN_TOKEN
-        }
-        authentication {
-            basic(BasicAuthentication)
-        }
+        url = "https://maven.petrus.dev/releases"
     }
 }
 
 dependencies {
+
     compile "com.github.MilkBowl:VaultAPI:1.7"
-    compile "br.com.finalcraft:EverNifeCore:1.4.1"
+    compile "br.com.finalcraft:EverNifeCore:2.0.1"
 
     compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.12'

@@ -55,7 +55,7 @@ public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> 
     }
 
     @Override
-    public void saveIfRecentChanged() {
+    public void savePDSection() {
         getConfig().setValue("FinalEconomy.money", moneyWrapper.get());
     }
 
