@@ -1,5 +1,5 @@
 group 'br.com.finalcraft'
-version '1.0.1a'
+version '1.0.2'
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
@@ -23,7 +23,7 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
     maven {
-        url = "https://maven.petrus.dev/releases"
+        url = "https://maven.petrus.dev/public"
     }
 }
 
