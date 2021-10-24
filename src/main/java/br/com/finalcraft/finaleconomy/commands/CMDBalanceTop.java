@@ -34,7 +34,7 @@ public class CMDBalanceTop {
             usage = "<Player>"
     )
     public void top(CommandSender sender, MultiArgumentos argumentos){
-        NumberWrapper<Integer> amount = argumentos.get(1).getNumberWrapper(Integer.class, 10).boundLower(10);
+        NumberWrapper<Integer> amount = argumentos.get(0).getNumberWrapper(Integer.class, 10).boundLower(10);
         BAL_TOP.send(0, amount.get(), sender);
     }
 
