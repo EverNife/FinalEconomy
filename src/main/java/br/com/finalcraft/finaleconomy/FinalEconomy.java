@@ -6,6 +6,7 @@ import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class FinalEconomy extends JavaPlugin{
 
@@ -29,8 +30,14 @@ public class FinalEconomy extends JavaPlugin{
         info("§aLoading up Configs...");
         ConfigManager.initialize(FinalEconomy.this);
 
-        info("§aRegistering Commands...");
-        CommandRegisterer.registerCommands(this);
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                info("§aRegistering Commands...");
+                CommandRegisterer.registerCommands(FinalEconomy.this);
+            }
+        }.runTaskLater(this, 1);
+
     }
 
 }
