@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 
 public class CMDBalanceTop {
 
-    private List<String> topCommandList = new ArrayList();
-
     private final PageViwer<FEPlayerData, Double> BAL_TOP = PageViwer.builder(
             () -> PlayerController.getAllPlayerData(FEPlayerData.class).stream().collect(Collectors.toList()),
             playerData -> playerData.getMoney())
@@ -35,7 +33,7 @@ public class CMDBalanceTop {
             aliases = {"balancetop","baltop","moneytop","febalancetop"},
             usage = "<Player>"
     )
-    public void top(CommandSender sender, MultiArgumentos argumentos, String label){
+    public void top(CommandSender sender, MultiArgumentos argumentos){
         NumberWrapper<Integer> amount = argumentos.get(1).getNumberWrapper(Integer.class, 10).boundLower(10);
         BAL_TOP.send(0, amount.get(), sender);
     }
