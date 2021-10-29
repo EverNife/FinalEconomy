@@ -66,9 +66,6 @@ public class CMDPay {
         playerData.removeMoney(amount);
         targetData.addMoney(amount);
 
-        playerData.forceSavePlayerData();
-        targetData.forceSavePlayerData();
-
         PAY_SUCESS_SENDER
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%receiver%", targetData.getPlayerName())
