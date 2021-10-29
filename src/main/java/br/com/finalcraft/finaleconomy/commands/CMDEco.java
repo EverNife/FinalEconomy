@@ -22,15 +22,16 @@ public class CMDEco {
     // GIVE
     // -----------------------------------------------------------------------------------------------------------------------------//
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§a$%amount% added to %receiver% account. New balance: $%balance%")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§a$%amount% adicionado à §e%receiver%§a. Novo Saldo: $%balance%")
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §a$%amount% added to %receiver% account. New balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §a$%amount% adicionado ao jogador §e%receiver%§a. Novo Saldo: §e$%balance%")
     public static LocaleMessage GIVE_SUCESS;
 
     @FinalCMD.SubCMD(
             subcmd = {"give","add"},
             usage = "%name% <Player> <Amount>",
             locales = {
-                    @FCLocale(lang = LocaleType.PT_BR, text = "§bDá uma quantidade X de money para um jogador!")
+                    @FCLocale(lang = LocaleType.EN_US, text = "§bGive a specific amount of money to a player!"),
+                    @FCLocale(lang = LocaleType.PT_BR, text = "§bDá uma quantidade específica de money para um jogador!")
             }
     )
     public void give(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
@@ -65,19 +66,20 @@ public class CMDEco {
     // TAKE
     // -----------------------------------------------------------------------------------------------------------------------------//
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§a$%payer% does not have enought money. His balance: $%balance%")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§a$%payer% não possui dinheiro suficiente. Seu saldo é: $%balance%")
+    @FCLocale(lang = LocaleType.EN_US, text = "§e§l ▶ §c$%payer% does not have enought money. His balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§e§l ▶ §c$%payer% não possui dinheiro suficiente. Seu saldo é: §e$%balance%")
     public static LocaleMessage NOT_ENOUGH_MONEY;
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§a$%amount% taken from %payer% account. New balance: $%balance%")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§a$%amount% removido do jogador %payer%. Novo Saldo: $%balance%")
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §a$%amount% taken from %payer%'s account. New balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §a$%amount% removido do jogador %payer%. Novo Saldo: §e$%balance%")
     public static LocaleMessage TAKE_SUCESS;
 
     @FinalCMD.SubCMD(
             subcmd = {"take","remove"},
             usage = "%name% <Player> <Amount>",
             locales = {
-                    @FCLocale(lang = LocaleType.PT_BR, text = "§bRemove uma quantidade X de money de um jogador!")
+                    @FCLocale(lang = LocaleType.EN_US, text = "§bRemove a specific amount of money from a player!"),
+                    @FCLocale(lang = LocaleType.PT_BR, text = "§bRemove uma quantidade específica de money de um jogador!")
             }
     )
     public void take(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
@@ -121,15 +123,16 @@ public class CMDEco {
     // SET
     // -----------------------------------------------------------------------------------------------------------------------------//
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§a%player% balance's was set to $%balance%")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§aO Saldo do jogador %player% foi definido para: $%balance%")
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §a%player% balance's was set to §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §aO Saldo do jogador %player% foi definido para §e$%balance%")
     public static LocaleMessage SET_SUCESS;
 
     @FinalCMD.SubCMD(
             subcmd = {"set"},
             usage = "%name% <Player> <Amount>",
             locales = {
-                    @FCLocale(lang = LocaleType.PT_BR, text = "§bDefine o money de um jogador para uma determinada quantidade!")
+                    @FCLocale(lang = LocaleType.EN_US, text = "§bSet a player's balance to a specific amount!"),
+                    @FCLocale(lang = LocaleType.PT_BR, text = "§bDefina o saldo de um jogador para um valor específico!")
             }
     )
     public void set(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
