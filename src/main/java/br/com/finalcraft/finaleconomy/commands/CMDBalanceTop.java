@@ -6,6 +6,7 @@ import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
 import br.com.finalcraft.evernifecore.util.FCTextUtil;
 import br.com.finalcraft.evernifecore.util.numberwrapper.NumberWrapper;
 import br.com.finalcraft.evernifecore.util.pageviwer.PageViwer;
+import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
 
@@ -29,7 +30,8 @@ public class CMDBalanceTop {
 
     @FinalCMD(
             aliases = {"balancetop","baltop","moneytop","febalancetop"},
-            usage = "<Player>"
+            usage = "<Player>",
+            permission = PermissionNodes.COMMAND_BALANCETOP
     )
     public void top(CommandSender sender, MultiArgumentos argumentos){
         NumberWrapper<Integer> amount = argumentos.get(0).getNumberWrapper(Integer.class, 10).boundLower(10);
