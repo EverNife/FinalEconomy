@@ -9,8 +9,6 @@ import br.com.finalcraft.evernifecore.util.pageviwer.PageViwer;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CMDBalanceTop {

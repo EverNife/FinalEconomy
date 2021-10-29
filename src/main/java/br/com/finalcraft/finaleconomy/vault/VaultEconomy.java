@@ -5,7 +5,7 @@ import net.milkbowl.vault.economy.EconomyResponse;
 
 import java.util.List;
 
-public class VaultEco extends FinalEcoAbstract {
+public class VaultEconomy extends FinalEcoAbstract {
 
     @Override
     public boolean isEnabled() {

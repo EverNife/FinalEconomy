@@ -1,6 +1,6 @@
 package br.com.finalcraft.finaleconomy;
 
-import br.com.finalcraft.finaleconomy.api.FEconomyAPI;
+import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
@@ -25,7 +25,7 @@ public class FinalEconomy extends JavaPlugin{
         instance = this;
 
         info("§aIntegrating to VAULT...");
-        this.getServer().getServicesManager().register(Economy.class, FEconomyAPI.vaultEco, this, ServicePriority.Highest);
+        this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
 
         info("§aLoading up Configs...");
         ConfigManager.initialize(FinalEconomy.this);

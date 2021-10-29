@@ -2,37 +2,18 @@ package br.com.finalcraft.finaleconomy.vault;
 
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
+import br.com.finalcraft.finaleconomy.api.IFinalEconomy;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 
-public abstract class FinalEcoAbstract implements Economy {
+public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
 
     @Override
     public String format(double amount) {
         return FCMathUtil.toString(amount);
     }
-
-    public abstract boolean hasAccount(FEPlayerData playerData);
-
-    public abstract double getBalance(FEPlayerData playerData);
-
-    public abstract boolean has(FEPlayerData playerData, double amount);
-
-    public abstract EconomyResponse withdrawPlayer(FEPlayerData playerData, double amount);
-
-    public abstract EconomyResponse depositPlayer(FEPlayerData playerData, double amount);
-
-    public abstract EconomyResponse createBank(String name);
-
-    public abstract EconomyResponse createBank(String name, FEPlayerData playerData);
-
-    public abstract EconomyResponse isBankOwner(String name, FEPlayerData playerData);
-
-    public abstract EconomyResponse isBankMember(String name, FEPlayerData playerData);
-
-    public abstract boolean createPlayerAccount(FEPlayerData playerData);
 
     @Override
     public boolean hasAccount(String playerName) {
