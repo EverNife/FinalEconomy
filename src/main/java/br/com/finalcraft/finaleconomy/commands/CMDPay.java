@@ -8,27 +8,29 @@ import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.evernifecore.util.FCMessageUtil;
+import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.entity.Player;
 
 public class CMDPay {
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§aYou do not have enough money. Current balance: $%balance%")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§aVocê não tem money suficiente. Seu saldo atual: $%balance%")
+    @FCLocale(lang = LocaleType.EN_US, text = "§e§l ▶ §cYou do not have enough money. Current balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§e§l ▶ §cVocê não tem money suficiente. Seu saldo atual: §e$%balance%")
     public static LocaleMessage NOT_ENOUGH_MONEY;
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§aYou have payed $%amount% to %receiver%.")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§aVocê pagou $%amount% para %receiver%.")
-    public static LocaleMessage PAY_SUCESS_SENDER;
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §aYou have payed $%amount% to %receiver%.")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §aVocê pagou $%amount% para o jogador %receiver%.")
+    public static LocaleMessage PAY_SUCCESS_SENDER;
 
-    @FCLocale(lang = LocaleType.EN_US, text = "§aYou have received $%amount% from %payer%.")
-    @FCLocale(lang = LocaleType.PT_BR, text = "§aVocê recebeu $%amount% do(a) %payer%.")
-    public static LocaleMessage PAY_SUCESS_RECEIVER;
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §aYou have received $%amount% from %payer%.")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §aVocê recebeu $%amount% do jogador %payer%.")
+    public static LocaleMessage PAY_SUCCESS_RECEIVER;
 
 
     @FinalCMD(
             aliases = {"pay","pagar"},
-            usage = "%label% <Player> <Amount>"
+            usage = "%label% <Player> <Amount>",
+            permission = PermissionNodes.COMMAND_PAY
     )
     public void pay(Player player, FEPlayerData playerData, String label, MultiArgumentos argumentos, HelpLine helpLine) {
 
@@ -47,7 +49,7 @@ public class CMDPay {
         Double amount = argumentos.get(1).getDouble();
 
         if (amount == null){
-            helpLine.sendTo(player);
+            FCMessageUtil.needsToBeDouble(player, argumentos.getStringArg(1));
             return;
         }
 
@@ -66,16 +68,16 @@ public class CMDPay {
         playerData.removeMoney(amount);
         targetData.addMoney(amount);
 
-        PAY_SUCESS_SENDER
+        PAY_SUCCESS_SENDER
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%receiver%", targetData.getPlayerName())
                 .send(player);
 
         if (targetData.isPlayerOnline()){
-            PAY_SUCESS_RECEIVER
+            PAY_SUCCESS_RECEIVER
                     .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                     .addPlaceholder("%payer%", playerData.getPlayerName())
-                    .send(player);
+                    .send(targetData.getPlayer());
         }
     }
 
