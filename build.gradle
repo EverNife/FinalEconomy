@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
 
-    compile "com.github.MilkBowl:VaultAPI:1.7"
+    compile "com.github.MilkBowl:VaultAPI:1.7.1"
     compile "br.com.finalcraft:EverNifeCore:2.0.1"
 
     compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
