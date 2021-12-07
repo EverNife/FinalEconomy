@@ -26,6 +26,7 @@ public class CMDBalanceTop {
             .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
             .setIncludeDate(true)
             .setIncludeTotalPlayers(true)
+            .setLineEnd(100)
             .build();
 
     @FinalCMD(
@@ -34,8 +35,11 @@ public class CMDBalanceTop {
             permission = PermissionNodes.COMMAND_BALANCETOP
     )
     public void top(CommandSender sender, MultiArgumentos argumentos){
-        NumberWrapper<Integer> amount = argumentos.get(0).getNumberWrapper(Integer.class, 10).boundLower(10);
-        BAL_TOP.send(0, amount.get(), sender);
+        NumberWrapper<Integer> page = argumentos.get(0)
+                .getNumberWrapper(Integer.class, 1)
+                .bound(1, 10);
+
+        BAL_TOP.send(page.get(), sender);
     }
 
 }
