@@ -2,8 +2,10 @@ package br.com.finalcraft.finaleconomy.config.data;
 
 import br.com.finalcraft.evernifecore.config.playerdata.PDSection;
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerData;
+import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.evernifecore.util.numberwrapper.NumberWrapper;
 import br.com.finalcraft.finaleconomy.api.events.EconomyUpdateEvent;
+import br.com.finalcraft.finaleconomy.config.FESettings;
 import org.bukkit.Bukkit;
 
 public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> {
@@ -51,7 +53,7 @@ public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> 
     }
 
     public String getMoneyFormatted(){
-        return this.moneyWrapper.toString();
+        return FESettings.MONEY_FORMATTER.format(FCMathUtil.normalizeDouble(this.moneyWrapper.get()));
     }
 
     @Override

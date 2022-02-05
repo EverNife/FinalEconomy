@@ -3,6 +3,7 @@ package br.com.finalcraft.finaleconomy;
 import br.com.finalcraft.evernifecore.metrics.Metrics;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
+import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
@@ -31,6 +32,9 @@ public class FinalEconomy extends JavaPlugin{
 
         info("§aIntegrating to VAULT...");
         this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
+
+        info("§aLoading Configuration...");
+        ConfigManager.initialize(this);
 
         new BukkitRunnable(){
             @Override
