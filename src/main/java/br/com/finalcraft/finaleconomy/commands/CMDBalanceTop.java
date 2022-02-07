@@ -21,7 +21,7 @@ public class CMDBalanceTop {
                     FCTextUtil.alignCenter("§6 §l[§eBalTop§6§l]§6 §r","§e§m-")
             )
             .setFormatLine(
-                    "§7#  %number%:   §e%player%§r - §6$%money_formatted%"
+                    "§7#  %number%:   §6%money_formatted%§r - §a$%player%"
             )
             .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
             .setIncludeDate(true)
@@ -45,7 +45,7 @@ public class CMDBalanceTop {
         }
 
         int page = argumentos.get(0).getNumberWrapper(Integer.class, 1)
-                .boundLower(1) //0 page to Infinity
+                .boundLower(1)
                 .intValue();
 
         BAL_TOP.send(page, sender);
