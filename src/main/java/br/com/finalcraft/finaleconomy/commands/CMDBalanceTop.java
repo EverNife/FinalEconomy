@@ -21,7 +21,7 @@ public class CMDBalanceTop {
                     FCTextUtil.alignCenter("§6 §l[§eBalTop§6§l]§6 §r","§e§m-")
             )
             .setFormatLine(
-                    "§7#  %number%:   §6$%money_formatted%§r - §a%player%"
+                    "§7#  %number%:   §6%player%§r - §a$%money_formatted%"
             )
             .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
             .setIncludeDate(true)
