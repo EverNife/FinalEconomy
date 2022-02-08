@@ -21,7 +21,7 @@ public class CMDBalanceTop {
                     FCTextUtil.alignCenter("§6 §l[§eBalTop§6§l]§6 §r","§e§m-")
             )
             .setFormatLine(
-                    "§7#  %number%:   §6%money_formatted%§r - §a$%player%"
+                    "§7#  %number%:   §6$%money_formatted%§r - §a%player%"
             )
             .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
             .setIncludeDate(true)
@@ -31,12 +31,11 @@ public class CMDBalanceTop {
 
     @FinalCMD(
             aliases = {"balancetop","baltop","moneytop","febalancetop"},
-            usage = "[-all]",
             permission = PermissionNodes.COMMAND_BALANCETOP
     )
     public void top(CommandSender sender, MultiArgumentos argumentos){
 
-        if (argumentos.get(0).equalsIgnoreCase("-all")){
+        if (argumentos.get(0).equalsIgnoreCase("all")){
             if (!FCBukkitUtil.hasThePermission(sender, PermissionNodes.COMMAND_BALANCETOP_ALL)){
                 return;
             }
