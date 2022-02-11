@@ -1,14 +1,14 @@
 package br.com.finalcraft.finaleconomy;
 
+import br.com.finalcraft.evernifecore.EverNifeCore;
+import br.com.finalcraft.evernifecore.autoupdater.SpigotUpdateChecker;
 import br.com.finalcraft.evernifecore.metrics.Metrics;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class FinalEconomy extends JavaPlugin{
 
@@ -30,28 +30,31 @@ public class FinalEconomy extends JavaPlugin{
     public void onEnable() {
         instance = this;
 
+        try {
+            EverNifeCore.class.getSimpleName(); //This will throw NoClassDefFoundError if EverNifeCore is not Present
+        }catch (NoClassDefFoundError e){
+            for (int i = 0; i < 10; i++) {
+                warning("FinalEconomy Requires the plugin 'EverNifeCore' to work!");
+            }
+            throw e;
+        }
+
         info("§aIntegrating to VAULT...");
         this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
 
         info("§aLoading Configuration...");
         ConfigManager.initialize(this);
 
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                if (!Bukkit.getPluginManager().isPluginEnabled("EverNife")){
-                    for (int i = 0; i < 5; i++) {
-                        warning("FinalEconomy Requires EverNifeCore to work!");
-                    }
-                }
+        SpigotUpdateChecker.checkForUpdates(
+                this,
+                "97740", //FinalEconomy SpigotID: 97740
+                ConfigManager.getMainConfig()
+        );
 
-                info("§aRegistering Commands...");
-                CommandRegisterer.registerCommands(FinalEconomy.this);
+        Metrics metrics = new Metrics(FinalEconomy.this, 13365); //13365 FinalEconomy BStats
 
-                Metrics metrics = new Metrics(FinalEconomy.this, 13365); //13365 FinalEconomy BStats
-            }
-        }.runTaskLater(this, 1);
-
+        info("§aRegistering Commands...");
+        CommandRegisterer.registerCommands(FinalEconomy.this);
     }
 
 }
