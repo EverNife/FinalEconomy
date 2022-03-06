@@ -1,6 +1,6 @@
 package br.com.finalcraft.finaleconomy.commands;
 
-import br.com.finalcraft.evernifecore.argumento.MultiArgumentos;
+import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
 import br.com.finalcraft.evernifecore.commands.finalcmd.help.HelpLine;
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
@@ -8,7 +8,6 @@ import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
-import br.com.finalcraft.evernifecore.util.FCMessageUtil;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
@@ -27,27 +26,19 @@ public class CMDBalance {
 
     @FinalCMD(
             aliases = {"febalance","bal","money","balance"},
-            usage = "<Player>",
             permission = PermissionNodes.COMMAND_BALANCE
     )
-    public void balance(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
+    public void balance(CommandSender sender, HelpLine helpLine, @Arg(name = "[Player]") FEPlayerData target) {
 
-        if (!argumentos.get(0).isEmpty()){
+        if (target != null){
 
             if (!FCBukkitUtil.hasThePermission(sender,PermissionNodes.COMMAND_BALANCE_OTHER)){
                 return;
             }
 
-            FEPlayerData playerData = argumentos.get(0).getPDSection(FEPlayerData.class);
-
-            if (playerData == null){
-                FCMessageUtil.playerDataNotFound(sender, argumentos.getStringArg(0));
-                return;
-            }
-
             OTHER_BALANCE
-                    .addPlaceholder("%balance%", playerData.getMoneyFormatted())
-                    .addPlaceholder("%target%", playerData.getPlayerName())
+                    .addPlaceholder("%balance%", target.getMoneyFormatted())
+                    .addPlaceholder("%target%", target.getPlayerName())
                     .send(sender);
 
             return;
