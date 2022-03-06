@@ -1,13 +1,11 @@
 package br.com.finalcraft.finaleconomy.commands;
 
-import br.com.finalcraft.evernifecore.argumento.MultiArgumentos;
+import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
-import br.com.finalcraft.evernifecore.commands.finalcmd.help.HelpLine;
 import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
-import br.com.finalcraft.evernifecore.util.FCMessageUtil;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
@@ -28,37 +26,18 @@ public class CMDEco {
 
     @FinalCMD.SubCMD(
             subcmd = {"give","add"},
-            usage = "%name% <Player> <Amount>",
             locales = {
                     @FCLocale(lang = LocaleType.EN_US, text = "§bGive a specific amount of money to a player!"),
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDá uma quantidade específica de money para um jogador!")
             }
     )
-    public void give(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
-
-        if (argumentos.emptyArgs(1,2)) {
-            helpLine.sendTo(sender);
-            return;
-        }
-
-        FEPlayerData playerData = argumentos.get(1).getPDSection(FEPlayerData.class);
-        if (playerData == null){
-            FCMessageUtil.playerDataNotFound(sender, argumentos.getStringArg(1));
-            return;
-        }
-
-        Double amount = argumentos.get(2).getDouble();
-        if (amount == null){
-            FCMessageUtil.needsToBeDouble(sender, argumentos.getStringArg(2));
-            return;
-        }
-
-        playerData.addMoney(amount);
+    public void give(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
+        target.addMoney(amount);
 
         GIVE_SUCESS
-                .addPlaceholder("%receiver%", playerData.getPlayerName())
+                .addPlaceholder("%receiver%", target.getPlayerName())
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
-                .addPlaceholder("%balance%", playerData.getMoneyFormatted())
+                .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
     }
 
@@ -76,46 +55,28 @@ public class CMDEco {
 
     @FinalCMD.SubCMD(
             subcmd = {"take","remove"},
-            usage = "%name% <Player> <Amount>",
             locales = {
                     @FCLocale(lang = LocaleType.EN_US, text = "§bRemove a specific amount of money from a player!"),
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bRemove uma quantidade específica de money de um jogador!")
             }
     )
-    public void take(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
+    public void take(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
 
-        if (argumentos.emptyArgs(1,2)) {
-            helpLine.sendTo(sender);
-            return;
-        }
-
-        FEPlayerData playerData = argumentos.get(1).getPDSection(FEPlayerData.class);
-        if (playerData == null){
-            FCMessageUtil.playerDataNotFound(sender, argumentos.getStringArg(1));
-            return;
-        }
-
-        Double amount = argumentos.get(2).getDouble();
-        if (amount == null){
-            FCMessageUtil.needsToBeDouble(sender, argumentos.getStringArg(2));
-            return;
-        }
-
-        if (!playerData.hasMoney(amount)){
+        if (!target.hasMoney(amount)){
             NOT_ENOUGH_MONEY
-                    .addPlaceholder("%payer%", playerData.getPlayerName())
+                    .addPlaceholder("%payer%", target.getPlayerName())
                     .addPlaceholder("%amount%", amount)
-                    .addPlaceholder("%balance%", playerData.getMoneyFormatted())
+                    .addPlaceholder("%balance%", target.getMoneyFormatted())
                     .send(sender);
             return;
         }
 
-        playerData.removeMoney(amount);
+        target.removeMoney(amount);
 
         TAKE_SUCESS
-                .addPlaceholder("%payer%", playerData.getPlayerName())
+                .addPlaceholder("%payer%", target.getPlayerName())
                 .addPlaceholder("%money%", FCMathUtil.toString(amount))
-                .addPlaceholder("%balance%", playerData.getMoneyFormatted())
+                .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
     }
 
@@ -129,36 +90,17 @@ public class CMDEco {
 
     @FinalCMD.SubCMD(
             subcmd = {"set"},
-            usage = "%name% <Player> <Amount>",
             locales = {
                     @FCLocale(lang = LocaleType.EN_US, text = "§bSet a player's balance to a specific amount!"),
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDefina o saldo de um jogador para um valor específico!")
             }
     )
-    public void set(CommandSender sender, String label, MultiArgumentos argumentos, HelpLine helpLine) {
-
-        if (argumentos.emptyArgs(1,2)) {
-            helpLine.sendTo(sender);
-            return;
-        }
-
-        FEPlayerData playerData = argumentos.get(1).getPDSection(FEPlayerData.class);
-        if (playerData == null){
-            FCMessageUtil.playerDataNotFound(sender, argumentos.getStringArg(1));
-            return;
-        }
-
-        Double amount = argumentos.get(2).getDouble();
-        if (amount == null){
-            FCMessageUtil.needsToBeDouble(sender, argumentos.getStringArg(2));
-            return;
-        }
-
-        playerData.setMoney(amount);
+    public void set(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0:*]") Double amount) {
+        target.setMoney(amount);
 
         SET_SUCESS
-                .addPlaceholder("%player%", playerData.getPlayerName())
-                .addPlaceholder("%balance%", playerData.getMoneyFormatted())
+                .addPlaceholder("%player%", target.getPlayerName())
+                .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
     }
 
