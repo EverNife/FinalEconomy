@@ -9,6 +9,7 @@ import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class FinalEconomy extends JavaPlugin{
 
@@ -53,8 +54,15 @@ public class FinalEconomy extends JavaPlugin{
 
         Metrics metrics = new Metrics(FinalEconomy.this, 13365); //13365 FinalEconomy BStats
 
-        info("§aRegistering Commands...");
-        CommandRegisterer.registerCommands(FinalEconomy.this);
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                //Register commands only after all other plugins are loaded
+                //This is required to override EssentialsECO commands
+                info("§aRegistering Commands...");
+                CommandRegisterer.registerCommands(FinalEconomy.this);
+            }
+        }.runTaskLater(this, 1);
     }
 
 }
