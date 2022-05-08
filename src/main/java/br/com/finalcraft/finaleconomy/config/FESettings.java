@@ -19,6 +19,7 @@ public class FESettings {
         }
 
         MONEY_FORMATTER = NumberFormat.getNumberInstance(locale);
+        ConfigManager.getMainConfig().saveIfNewDefaults();
     }
 
 

@@ -8,5 +8,6 @@ public class PermissionNodes {
     public static final String COMMAND_BALANCETOP_ALL   = "finaleconomy.command.balancetop.all";
     public static final String COMMAND_PAY              = "finaleconomy.command.pay";
     public static final String COMMAND_ECO              = "finaleconomy.command.eco";
+    public static final String COMMAND_RELOAD           = "finaleconomy.command.reload";
 
 }

@@ -1,8 +1,7 @@
 package br.com.finalcraft.finaleconomy;
 
 import br.com.finalcraft.evernifecore.EverNifeCore;
-import br.com.finalcraft.evernifecore.autoupdater.SpigotUpdateChecker;
-import br.com.finalcraft.evernifecore.metrics.Metrics;
+import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
@@ -11,6 +10,10 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@ECPlugin(
+        spigotID = "97740",
+        bstatsID = "13365"
+)
 public class FinalEconomy extends JavaPlugin{
 
     public static FinalEconomy instance;
@@ -46,14 +49,6 @@ public class FinalEconomy extends JavaPlugin{
         info("§aLoading Configuration...");
         ConfigManager.initialize(this);
 
-        SpigotUpdateChecker.checkForUpdates(
-                this,
-                "97740", //FinalEconomy SpigotID: 97740
-                ConfigManager.getMainConfig()
-        );
-
-        Metrics metrics = new Metrics(FinalEconomy.this, 13365); //13365 FinalEconomy BStats
-
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -63,6 +58,11 @@ public class FinalEconomy extends JavaPlugin{
                 CommandRegisterer.registerCommands(FinalEconomy.this);
             }
         }.runTaskLater(this, 1);
+    }
+
+    @ECPlugin.Reload
+    public void reload(){
+        ConfigManager.initialize(this);
     }
 
 }

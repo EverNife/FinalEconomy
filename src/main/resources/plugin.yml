@@ -1,5 +1,5 @@
 name: FinalEconomy
-version: 1.0.3
+version: 1.0.4
 author: EverNife
 main: br.com.finalcraft.finaleconomy.FinalEconomy
 depend: [ Vault ]
