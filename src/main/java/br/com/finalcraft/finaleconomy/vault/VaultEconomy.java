@@ -14,7 +14,7 @@ public class VaultEconomy extends FinalEcoAbstract {
 
     @Override
     public String getName() {
-        return "";
+        return "FinalEconomy";
     }
 
     @Override
