@@ -5,6 +5,7 @@ import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
+import br.com.finalcraft.finaleconomy.integration.EverNifeCoreIntegration;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,6 +53,9 @@ public class FinalEconomy extends JavaPlugin{
         new BukkitRunnable(){
             @Override
             public void run() {
+                //Integrate to EverNifeCore aftert server startup
+                EverNifeCoreIntegration.initialize();
+
                 //Register commands only after all other plugins are loaded
                 //This is required to override EssentialsECO commands
                 info("§aRegistering Commands...");

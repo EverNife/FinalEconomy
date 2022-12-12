@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 public class CMDBalanceTop {
 
-    private final PageViewer<FEPlayerData, Double> BAL_TOP = PageViewer.builder(
-                    () -> PlayerController.getAllPlayerData(FEPlayerData.class).stream().collect(Collectors.toList()),
-                    playerData -> playerData.getMoney())
+    private final PageViewer<FEPlayerData, Double> BAL_TOP = PageViewer.targeting(FEPlayerData.class)
+            .withSuplier(() -> PlayerController.getAllPlayerData(FEPlayerData.class).stream().collect(Collectors.toList()))
+            .extracting(FEPlayerData::getMoney)
             .setFormatHeader(
                     FCTextUtil.alignCenter("§6 §l[§eBalTop§6§l]§6 §r","§e§m-")
             )
