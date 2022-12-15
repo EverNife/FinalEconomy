@@ -4,3 +4,4 @@ author: EverNife
 main: br.com.finalcraft.finaleconomy.FinalEconomy
 depend: [ Vault ]
 loadbefore:  [ EverNifeCore, Essentials ]
+api-version: 1.13
