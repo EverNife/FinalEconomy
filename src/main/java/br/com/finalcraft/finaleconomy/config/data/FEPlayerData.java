@@ -2,6 +2,7 @@ package br.com.finalcraft.finaleconomy.config.data;
 
 import br.com.finalcraft.evernifecore.config.playerdata.PDSection;
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerData;
+import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.evernifecore.util.numberwrapper.NumberWrapper;
 import br.com.finalcraft.finaleconomy.api.events.EconomyUpdateEvent;
@@ -48,7 +49,10 @@ public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> 
     @Override
     public void setRecentChanged() {
         this.moneyWrapper.boundLower(0D);
-        Bukkit.getPluginManager().callEvent(new EconomyUpdateEvent(this, getMoney()));
+        Bukkit.getPluginManager().callEvent(new EconomyUpdateEvent(this,
+                getMoney(),
+                FESettings.allowAsyncEconomyChanges == false ? false : FCBukkitUtil.isMainThread() == false
+        ));
         super.setRecentChanged();
     }
 
