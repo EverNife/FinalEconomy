@@ -3,6 +3,7 @@ package br.com.finalcraft.finaleconomy;
 import br.com.finalcraft.evernifecore.EverNifeCore;
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
+import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import br.com.finalcraft.finaleconomy.integration.EverNifeCoreIntegration;
@@ -19,18 +20,6 @@ public class FinalEconomy extends JavaPlugin{
 
     public static FinalEconomy instance;
 
-    public static void info(String msg){
-        instance.getLogger().info("[Info] " + msg);
-    }
-
-    public static void debug(String msg){
-        instance.getLogger().info("[Debug] " + msg);
-    }
-
-    public static void warning(String msg){
-        instance.getLogger().info("[Warning] " + msg);
-    }
-
     @Override
     public void onEnable() {
         instance = this;
@@ -39,15 +28,15 @@ public class FinalEconomy extends JavaPlugin{
             EverNifeCore.class.getSimpleName(); //This will throw NoClassDefFoundError if EverNifeCore is not Present
         }catch (NoClassDefFoundError e){
             for (int i = 0; i < 10; i++) {
-                warning("FinalEconomy Requires the plugin 'EverNifeCore' to work!");
+                this.getLogger().severe("FinalEconomy Requires the plugin 'EverNifeCore' to work!");
             }
             throw e;
         }
 
-        info("§aIntegrating to VAULT...");
+        getLogger().info("§aIntegrating to VAULT...");
         this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
 
-        info("§aLoading Configuration...");
+        getLogger().info("§aLoading Configuration...");
         ConfigManager.initialize(this);
 
         new BukkitRunnable(){
@@ -58,8 +47,9 @@ public class FinalEconomy extends JavaPlugin{
 
                 //Register commands only after all other plugins are loaded
                 //This is required to override EssentialsECO commands
-                info("§aRegistering Commands...");
+                getLogger().info("§aRegistering Commands...");
                 CommandRegisterer.registerCommands(FinalEconomy.this);
+                CMDBalanceTop.instance.recalculateBalTop();
             }
         }.runTaskLater(this, 1);
     }
@@ -67,6 +57,7 @@ public class FinalEconomy extends JavaPlugin{
     @ECPlugin.Reload
     public void reload(){
         ConfigManager.initialize(this);
+        CMDBalanceTop.instance.recalculateBalTop();
     }
 
 }

@@ -12,6 +12,10 @@ public class FESettings {
 
     public static boolean allowAsyncEconomyChanges = false;
 
+    public static boolean BALTOP_INCLUDE_TOTAL_USERS_COUNT = true;
+    public static boolean BALTOP_INCLUDE_DAY_OF_TODAY = true;
+    public static int BALTOP_MAX_PAGES = -1;
+
     public static void initialize(){
 
         String localeMoneyFormatter = ConfigManager.getMainConfig().getOrSetDefaultValue(
@@ -24,7 +28,7 @@ public class FESettings {
 
         Locale locale = Locale.forLanguageTag(localeMoneyFormatter);
         if (locale == null){
-            FinalEconomy.warning("No Locale found for [" + localeMoneyFormatter + "], using 'en_US' instead!");
+            FinalEconomy.instance.getLogger().warning("No Locale found for [" + localeMoneyFormatter + "], using 'en_US' instead!");
             locale = Locale.forLanguageTag("en_US");
         }
         MONEY_FORMATTER = NumberFormat.getNumberInstance(locale);
@@ -44,6 +48,24 @@ public class FESettings {
                             "\nThe author of such plugin should fix it, not you or me!"
             );
         }
+
+        BALTOP_INCLUDE_TOTAL_USERS_COUNT = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Baltop.includeTotalUsersCount",
+                true,
+                "If true, the baltop command will include the total users count on the first line!"
+        );
+
+        BALTOP_INCLUDE_DAY_OF_TODAY = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Baltop.includeDayOfToday",
+                true,
+                "If true, the baltop command will include the [day of today] on the second line!"
+        );
+
+        BALTOP_MAX_PAGES = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Baltop.maxPages",
+                -1,
+                "Defines how many pages will be shown on the baltop command, if -1, will show all pages!"
+        ) * 10;
 
         ConfigManager.getMainConfig().saveIfNewDefaults();
     }
