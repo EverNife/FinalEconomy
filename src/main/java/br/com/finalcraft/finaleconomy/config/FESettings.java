@@ -16,6 +16,10 @@ public class FESettings {
     public static boolean BALTOP_INCLUDE_DAY_OF_TODAY = true;
     public static int BALTOP_MAX_PAGES = -1;
 
+    public static boolean NOTIFY_ON_ECO_GIVE = false;
+    public static boolean NOTIFY_ON_ECO_TAKE = false;
+    public static boolean NOTIFY_ON_ECO_SET = false;
+
     public static void initialize(){
 
         String localeMoneyFormatter = ConfigManager.getMainConfig().getOrSetDefaultValue(
@@ -66,6 +70,27 @@ public class FESettings {
                 -1,
                 "Defines how many pages will be shown on the baltop command, if -1, will show all pages!"
         ) * 10;
+
+        NOTIFY_ON_ECO_GIVE = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Notification.notifyOnEcoGive",
+                false,
+                "If true, will notify the player when he receives money from the command" +
+                        "\n'/eco give <Player>'! If false, will not notify the player!"
+        );
+
+        NOTIFY_ON_ECO_TAKE = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Notification.notifyOnEcoTake",
+                false,
+                "If true, will notify the player when he loses money from the command" +
+                        "\n'/eco take <Player>'! If false, will not notify the player!"
+        );
+
+        NOTIFY_ON_ECO_SET = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Notification.notifyOnEcoSet",
+                false,
+                "If true, will notify the player when his money is set from the command" +
+                        "\n'/eco set <Player>'! If false, will not notify the player!"
+        );
 
         ConfigManager.getMainConfig().saveIfNewDefaults();
     }

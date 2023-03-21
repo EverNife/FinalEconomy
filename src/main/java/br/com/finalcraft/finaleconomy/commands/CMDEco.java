@@ -9,6 +9,7 @@ import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.FinalEconomy;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
+import br.com.finalcraft.finaleconomy.config.FESettings;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
 
@@ -26,6 +27,10 @@ public class CMDEco {
     @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §a$%amount% adicionado ao jogador §e%receiver%§a. Novo Saldo: §e$%balance%")
     public static LocaleMessage GIVE_SUCCESS;
 
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §a$%amount% was added to your account. New balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §a$%amount% foi adicionado a sua conta. Novo Saldo: §e$%balance%")
+    public static LocaleMessage MONEY_WAS_ADDED_TO_YOUR_ACCOUNT;
+
     @FinalCMD.SubCMD(
             subcmd = {"give","add"},
             locales = {
@@ -41,6 +46,13 @@ public class CMDEco {
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
+
+        if (FESettings.NOTIFY_ON_ECO_GIVE && target.isPlayerOnline()){
+            MONEY_WAS_ADDED_TO_YOUR_ACCOUNT
+                    .addPlaceholder("%amount%", FCMathUtil.toString(amount))
+                    .addPlaceholder("%balance%", target.getMoneyFormatted())
+                    .send(target.getPlayer());
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------------------//
@@ -54,6 +66,10 @@ public class CMDEco {
     @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §a$%amount% taken from %payer%'s account. New balance: §e$%balance%")
     @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §a$%amount% removido do jogador %payer%. Novo Saldo: §e$%balance%")
     public static LocaleMessage TAKE_SUCCESS;
+
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §e$%amount% was removed from your account. New balance: §e$%balance%")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §e$%amount% foi removido da sua conta. Novo Saldo: §e$%balance%")
+    public static LocaleMessage MONEY_WAS_REMOVED_FROM_YOUR_ACCOUNT;
 
     @FinalCMD.SubCMD(
             subcmd = {"take","remove"},
@@ -77,9 +93,16 @@ public class CMDEco {
 
         TAKE_SUCCESS
                 .addPlaceholder("%payer%", target.getPlayerName())
-                .addPlaceholder("%money%", FCMathUtil.toString(amount))
+                .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
+
+        if (FESettings.NOTIFY_ON_ECO_TAKE && target.isPlayerOnline()){
+            MONEY_WAS_REMOVED_FROM_YOUR_ACCOUNT
+                    .addPlaceholder("%amount%", FCMathUtil.toString(amount))
+                    .addPlaceholder("%balance%", target.getMoneyFormatted())
+                    .send(target.getPlayer());
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------------------//
@@ -90,6 +113,10 @@ public class CMDEco {
     @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §aO Saldo do jogador %player% foi definido para §e$%balance%")
     public static LocaleMessage SET_SUCESS;
 
+    @FCLocale(lang = LocaleType.EN_US, text = "§2§l ▶ §eYour balance was changed from $%old_balance% to $%new_balance%.")
+    @FCLocale(lang = LocaleType.PT_BR, text = "§2§l ▶ §eSeu saldo foi alterdo de $%old_balance% para $%new_balance%.")
+    public static LocaleMessage MONEY_WAS_SET_FOR_YOUR_ACCOUNT;
+
     @FinalCMD.SubCMD(
             subcmd = {"set"},
             locales = {
@@ -98,12 +125,20 @@ public class CMDEco {
             }
     )
     public void set(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0:*]") Double amount) {
+        String oldBalance = target.getMoneyFormatted();
         target.setMoney(amount);
 
         SET_SUCESS
                 .addPlaceholder("%player%", target.getPlayerName())
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
+
+        if (FESettings.NOTIFY_ON_ECO_SET && target.isPlayerOnline()){
+            MONEY_WAS_SET_FOR_YOUR_ACCOUNT
+                    .addPlaceholder("%old_balance%", oldBalance)
+                    .addPlaceholder("%new_balance%", target.getMoneyFormatted())
+                    .send(target.getPlayer());
+        }
     }
 
     @FinalCMD.SubCMD(
