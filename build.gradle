@@ -28,11 +28,11 @@ repositories {
 }
 
 dependencies {
-
-    compile "com.github.MilkBowl:VaultAPI:1.7.1"
+    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
     compile "br.com.finalcraft:EverNifeCore:2.0.3"
 
-    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    compile "com.github.MilkBowl:VaultAPI:1.7.1"
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
 }
