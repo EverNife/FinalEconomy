@@ -7,7 +7,9 @@ import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import br.com.finalcraft.finaleconomy.integration.EverNifeCoreIntegration;
+import br.com.finalcraft.finaleconomy.integration.PlaceholderIntegration;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,12 +20,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 )
 public class FinalEconomy extends JavaPlugin{
 
-    public static FinalEconomy instance;
+    public static FinalEconomy instance; { instance = this; } //Instance as early as possible!
 
     @Override
     public void onEnable() {
-        instance = this;
-
         try {
             EverNifeCore.class.getSimpleName(); //This will throw NoClassDefFoundError if EverNifeCore is not Present
         }catch (NoClassDefFoundError e){
@@ -50,6 +50,12 @@ public class FinalEconomy extends JavaPlugin{
                 getLogger().info("§aRegistering Commands...");
                 CommandRegisterer.registerCommands(FinalEconomy.this);
                 CMDBalanceTop.instance.recalculateBalTop();
+
+                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
+                    getLogger().info("§aRegistering Placeholders...");
+                    PlaceholderIntegration.initialize(instance);
+                }
+
             }
         }.runTaskLater(this, 1);
     }

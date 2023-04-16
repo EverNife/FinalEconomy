@@ -18,11 +18,7 @@ import java.util.stream.Collectors;
 
 public class CMDBalanceTop {
 
-    public static CMDBalanceTop instance;
-
-    public CMDBalanceTop() {
-        instance = this;
-    }
+    public static CMDBalanceTop instance; {instance = this;};
 
     @FCLocale(lang = LocaleType.EN_US, text = "§e§m-----------------------§6§l[§eBalTop§6§l]§r§e§m-----------------------§r")
     public static LocaleMessage BALTOP_PREFIX;

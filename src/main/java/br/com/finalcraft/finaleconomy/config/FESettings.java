@@ -11,6 +11,7 @@ public class FESettings {
     public static NumberFormat MONEY_FORMATTER = NumberFormat.getNumberInstance(Locale.forLanguageTag("pt_BR"));
 
     public static boolean allowAsyncEconomyChanges = false;
+    public static int PLACEHOLDER_TOP_TIME_CACHE;
 
     public static boolean BALTOP_INCLUDE_TOTAL_USERS_COUNT = true;
     public static boolean BALTOP_INCLUDE_DAY_OF_TODAY = true;
@@ -52,6 +53,14 @@ public class FESettings {
                             "\nThe author of such plugin should fix it, not you or me!"
             );
         }
+
+        PLACEHOLDER_TOP_TIME_CACHE = ConfigManager.getMainConfig().getOrSetDefaultValue(
+                "Settings.Placeholders.topTimeCache",
+                5,
+                "The time in seconds that the top list will be cached." +
+                        "\nThis is to prevent the server from lagging when the top list is requested too often." +
+                        "\nRecommended to keep at least in 1 second!"
+        );
 
         BALTOP_INCLUDE_TOTAL_USERS_COUNT = ConfigManager.getMainConfig().getOrSetDefaultValue(
                 "Settings.Baltop.includeTotalUsersCount",
