@@ -3,6 +3,7 @@ package br.com.finalcraft.finaleconomy;
 import br.com.finalcraft.evernifecore.EverNifeCore;
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
+import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
@@ -60,10 +61,11 @@ public class FinalEconomy extends JavaPlugin{
         }.runTaskLater(this, 1);
     }
 
-    @ECPlugin.Reload
+    @ECPlugin.Reload(reloadAfter = "EverNifeCore")
     public void reload(){
         ConfigManager.initialize(this);
         CMDBalanceTop.instance.recalculateBalTop();
+        BaltopTrackingCenter.refreshBalTop(true);
     }
 
 }

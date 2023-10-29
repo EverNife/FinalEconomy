@@ -6,12 +6,14 @@ import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.evernifecore.util.numberwrapper.NumberWrapper;
 import br.com.finalcraft.finaleconomy.api.events.EconomyUpdateEvent;
+import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.config.FESettings;
 import org.bukkit.Bukkit;
 
 public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> {
 
     private NumberWrapper<Double> moneyWrapper;
+    private Integer baltopPosition = null;
 
     public FEPlayerData(PlayerData playerData) {
         super(playerData);
@@ -44,6 +46,16 @@ public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> 
     public void setMoney(double amount){
         getMoneyWrapper().setValue(amount);
         setRecentChanged();
+    }
+
+    public Integer getBaltopPosition(boolean forceRecalculation) {
+        BaltopTrackingCenter.refreshBalTop(forceRecalculation);
+        return baltopPosition;
+    }
+
+    public FEPlayerData setBaltopPosition(Integer baltopPosition) {
+        this.baltopPosition = baltopPosition;
+        return this;
     }
 
     @Override
