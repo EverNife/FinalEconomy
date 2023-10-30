@@ -31,7 +31,7 @@ public class BaltopTrackingCenter {
                     .collect(Collectors.toList());
 
             for (int i = 0; i < TOP_PLAYERS.size(); i++) {
-                TOP_PLAYERS.get(i).setBaltopPosition(i);
+                TOP_PLAYERS.get(i).setBaltopPosition(i + 1);
             }
 
         }

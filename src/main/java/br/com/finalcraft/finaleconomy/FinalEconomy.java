@@ -43,7 +43,7 @@ public class FinalEconomy extends JavaPlugin{
         new BukkitRunnable(){
             @Override
             public void run() {
-                //Integrate to EverNifeCore aftert server startup
+                //Integrate to EverNifeCore after server startup
                 EverNifeCoreIntegration.initialize();
 
                 //Register commands only after all other plugins are loaded
