@@ -46,7 +46,7 @@ public class CMDBalanceTop {
                 )
                 .addPlaceholder("%money_formatted%", FEPlayerData::getMoneyFormatted)
                 .setIncludeDate(FESettings.BALTOP_INCLUDE_DAY_OF_TODAY)
-                .setIncludeTotalPlayers(FESettings.BALTOP_INCLUDE_TOTAL_USERS_COUNT)
+                .setIncludeTotalCount(FESettings.BALTOP_INCLUDE_TOTAL_USERS_COUNT)
                 .setLineEnd(FESettings.BALTOP_MAX_PAGES)
                 .build();
     }
