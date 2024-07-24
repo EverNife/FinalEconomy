@@ -18,7 +18,7 @@ public class ConfigManager {
 
         FESettings.initialize();
 
-        PlayerController.registerAutoLoadPDSection(
+        PlayerController.registerPDSectionCfg(
                 instance,
                 FEPlayerData.class
         );
