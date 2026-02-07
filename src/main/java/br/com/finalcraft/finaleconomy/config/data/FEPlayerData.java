@@ -2,13 +2,12 @@ package br.com.finalcraft.finaleconomy.config.data;
 
 import br.com.finalcraft.evernifecore.config.playerdata.PDSection;
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerData;
-import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.evernifecore.util.numberwrapper.NumberWrapper;
 import br.com.finalcraft.finaleconomy.api.events.EconomyUpdateEvent;
 import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.config.FESettings;
-import org.bukkit.Bukkit;
+import com.hypixel.hytale.server.core.HytaleServer;
 
 public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> {
 
@@ -61,10 +60,10 @@ public class FEPlayerData extends PDSection implements Comparable<FEPlayerData> 
     @Override
     public void setRecentChanged() {
         this.moneyWrapper.boundLower(0D);
-        Bukkit.getPluginManager().callEvent(new EconomyUpdateEvent(this,
-                getMoney(),
-                FESettings.allowAsyncEconomyChanges == false ? false : FCBukkitUtil.isMainThread() == false
-        ));
+        HytaleServer.get()
+                .getEventBus()
+                .dispatchFor(EconomyUpdateEvent.class)
+                .dispatch(new EconomyUpdateEvent(this, getMoney()));
         super.setRecentChanged();
     }
 

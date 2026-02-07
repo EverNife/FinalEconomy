@@ -4,166 +4,254 @@ import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.api.IFinalEconomy;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.OfflinePlayer;
+import net.milkbowl.vault2.economy.AccountPermission;
+import net.milkbowl.vault2.economy.Economy;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
 
     @Override
-    public String format(double amount) {
-        return FCMathUtil.toString(amount);
+    public boolean hasSharedAccountSupport() {
+        return false;
     }
 
     @Override
-    public boolean hasAccount(String playerName) {
-        return hasAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public boolean hasMultiCurrencySupport() {
+        return false;
     }
 
     @Override
-    public boolean hasAccount(OfflinePlayer player) {
-        return hasAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+    public int fractionalDigits(String pluginName) {
+        return 2;
     }
 
     @Override
-    public boolean hasAccount(String playerName, String worldName) {
-        return hasAccount(playerName);
+    public String format(BigDecimal amount) {
+        return FCMathUtil.toString(amount.doubleValue());
     }
 
     @Override
-    public boolean hasAccount(OfflinePlayer player, String worldName) {
-        return hasAccount(player);
+    public String format(String pluginName, BigDecimal amount) {
+        return format(amount);
     }
 
     @Override
-    public double getBalance(String playerName) {
-        return getBalance(PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public String format(BigDecimal amount, String currency) {
+        return format(amount);
     }
 
     @Override
-    public double getBalance(OfflinePlayer player) {
-        return getBalance(PlayerController.getPDSection(player, FEPlayerData.class));
+    public String format(String pluginName, BigDecimal amount, String currency) {
+        return format(amount);
     }
 
     @Override
-    public double getBalance(String playerName, String world) {
-        return getBalance(playerName);
+    public boolean hasCurrency(String currency) {
+        return true;
     }
 
     @Override
-    public double getBalance(OfflinePlayer player, String world) {
-        return getBalance(player);
+    public String getDefaultCurrency(String pluginName) {
+        return "";
     }
 
     @Override
-    public boolean has(String playerName, double amount) {
-        return has(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+    public String defaultCurrencyNamePlural(String pluginName) {
+        return "";
     }
 
     @Override
-    public boolean has(OfflinePlayer player, double amount) {
-        return has(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+    public String defaultCurrencyNameSingular(String pluginName) {
+        return "";
     }
 
     @Override
-    public boolean has(String playerName, String worldName, double amount) {
-        return has(playerName, amount);
+    public Collection<String> currencies() {
+        return List.of();
     }
 
     @Override
-    public boolean has(OfflinePlayer player, String worldName, double amount) {
-        return has(player, amount);
+    public boolean createAccount(UUID accountID, String name) {
+        return createPlayerAccount(PlayerController.getPDSection(accountID, FEPlayerData.class));
     }
 
     @Override
-    public EconomyResponse withdrawPlayer(String playerName, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+    public boolean createAccount(UUID accountID, String name, boolean player) {
+        return createAccount(accountID, name);
     }
 
     @Override
-    public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+    public boolean createAccount(UUID accountID, String name, String worldName) {
+        return createAccount(accountID, name);
     }
 
     @Override
-    public EconomyResponse withdrawPlayer(String playerName, String worldName, double amount) {
-        return withdrawPlayer(playerName, amount);
+    public boolean createAccount(UUID accountID, String name, String worldName, boolean player) {
+        return createAccount(accountID, name);
     }
 
     @Override
-    public EconomyResponse withdrawPlayer(OfflinePlayer player, String worldName, double amount) {
-        return withdrawPlayer(player, amount);
+    public Map<UUID, String> getUUIDNameMap() {
+        return Map.of();
     }
 
     @Override
-    public EconomyResponse depositPlayer(String playerName, double amount) {
-        return depositPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+    public Optional<String> getAccountName(UUID accountID) {
+        return Optional.empty();
     }
 
     @Override
-    public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
-        return depositPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+    public boolean hasAccount(UUID accountID) {
+        return hasAccount(PlayerController.getPDSection(accountID, FEPlayerData.class));
     }
 
     @Override
-    public EconomyResponse depositPlayer(String playerName, String worldName, double amount) {
-        return depositPlayer(playerName, amount);
+    public boolean hasAccount(UUID accountID, String worldName) {
+        return hasAccount(accountID);
     }
 
     @Override
-    public EconomyResponse depositPlayer(OfflinePlayer player, String worldName, double amount) {
-        return depositPlayer(player, amount);
+    public boolean renameAccount(UUID accountID, String name) {
+        return false;
     }
 
     @Override
-    public EconomyResponse createBank(String name, String player) {
-        if (player == null) return createBank(name);
-        return createBank(name, PlayerController.getPDSection(player, FEPlayerData.class));
+    public boolean renameAccount(String plugin, UUID accountID, String name) {
+        return renameAccount(accountID, name);
     }
 
     @Override
-    public EconomyResponse createBank(String name, OfflinePlayer player) {
-        if (player == null) return createBank(name);
-        return createBank(name, PlayerController.getPDSection(player, FEPlayerData.class));
+    public boolean deleteAccount(String plugin, UUID accountID) {
+        return false;
     }
 
     @Override
-    public EconomyResponse isBankOwner(String name, String playerName) {
-        return isBankOwner(name, PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public boolean accountSupportsCurrency(String plugin, UUID accountID, String currency) {
+        return true;
     }
 
     @Override
-    public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
-        return isBankOwner(name, PlayerController.getPDSection(player, FEPlayerData.class));
+    public boolean accountSupportsCurrency(String plugin, UUID accountID, String currency, String world) {
+        return accountSupportsCurrency(plugin, accountID, currency);
     }
 
     @Override
-    public EconomyResponse isBankMember(String name, String playerName) {
-        return isBankMember(name, PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public BigDecimal getBalance(String pluginName, UUID accountID) {
+        return BigDecimal.valueOf(getBalance(PlayerController.getPDSection(accountID, FEPlayerData.class)));
     }
 
     @Override
-    public EconomyResponse isBankMember(String name, OfflinePlayer player) {
-        return isBankMember(name, PlayerController.getPDSection(player, FEPlayerData.class));
+    public BigDecimal getBalance(String pluginName, UUID accountID, String world) {
+        return getBalance(pluginName, accountID);
     }
 
     @Override
-    public boolean createPlayerAccount(String playerName) {
-        return createPlayerAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public BigDecimal getBalance(String pluginName, UUID accountID, String world, String currency) {
+        return getBalance(pluginName, accountID);
     }
 
     @Override
-    public boolean createPlayerAccount(OfflinePlayer player) {
-        return createPlayerAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+    public boolean has(String pluginName, UUID accountID, BigDecimal amount) {
+        return has(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
     }
 
     @Override
-    public boolean createPlayerAccount(String playerName, String worldName) {
-        return createPlayerAccount(playerName);
+    public boolean has(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
+        return has(pluginName, accountID, amount);
     }
 
     @Override
-    public boolean createPlayerAccount(OfflinePlayer player, String worldName) {
-        return createPlayerAccount(player);
+    public boolean has(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
+        return has(pluginName, accountID, amount);
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, BigDecimal amount) {
+        EconomyResponse oldResponse = withdrawPlayer(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
+        return new net.milkbowl.vault2.economy.EconomyResponse(
+                BigDecimal.valueOf(oldResponse.amount),
+                BigDecimal.valueOf(oldResponse.balance),
+                net.milkbowl.vault2.economy.EconomyResponse.ResponseType.valueOf(oldResponse.type.name()),
+                oldResponse.errorMessage
+        );
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
+        return withdraw(pluginName, accountID, amount);
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
+        return withdraw(pluginName, accountID, amount);
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, BigDecimal amount) {
+        EconomyResponse oldResponse = depositPlayer(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
+        return new net.milkbowl.vault2.economy.EconomyResponse(
+                BigDecimal.valueOf(oldResponse.amount),
+                BigDecimal.valueOf(oldResponse.balance),
+                net.milkbowl.vault2.economy.EconomyResponse.ResponseType.valueOf(oldResponse.type.name()),
+                oldResponse.errorMessage
+        );
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
+        return deposit(pluginName, accountID, amount);
+    }
+
+    @Override
+    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
+        return deposit(pluginName, accountID, amount);
+    }
+
+    @Override
+    public boolean createSharedAccount(String pluginName, UUID accountID, String name, UUID owner) {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountOwner(String pluginName, UUID accountID, UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public boolean setOwner(String pluginName, UUID accountID, UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountMember(String pluginName, UUID accountID, UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public boolean addAccountMember(String pluginName, UUID accountID, UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public boolean addAccountMember(String pluginName, UUID accountID, UUID uuid, AccountPermission... initialPermissions) {
+        return false;
+    }
+
+    @Override
+    public boolean removeAccountMember(String pluginName, UUID accountID, UUID uuid) {
+        return false;
+    }
+
+    @Override
+    public boolean hasAccountPermission(String pluginName, UUID accountID, UUID uuid, AccountPermission permission) {
+        return false;
+    }
+
+    @Override
+    public boolean updateAccountPermission(String pluginName, UUID accountID, UUID uuid, AccountPermission permission, boolean value) {
+        return false;
     }
 }

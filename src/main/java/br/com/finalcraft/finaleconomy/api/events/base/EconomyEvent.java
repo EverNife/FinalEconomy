@@ -1,26 +1,10 @@
 package br.com.finalcraft.finaleconomy.api.events.base;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import com.hypixel.hytale.event.IEvent;
 
-public abstract  class EconomyEvent extends Event {
-
-    private static final HandlerList handlers = new HandlerList();
+public abstract class EconomyEvent implements IEvent<Void> {
 
     public EconomyEvent() {
-    }
-
-    public EconomyEvent(boolean isAsync) {
-        super(isAsync);
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
 }

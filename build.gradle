@@ -1,70 +1,89 @@
-group 'br.com.finalcraft'
-version '1.0.9'
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '9.3.1'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.3'
+}
 
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+version = project.version;
 
-sourceCompatibility = 1.8
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    withJavadocJar()
+}
 
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+javadoc {
+    options.addStringOption('Xdoclint:-missing', '-quiet')
 }
 
 repositories {
+    mavenCentral()
     flatDir {
         dirs 'libs'
     }
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
-    }
-    maven {
-        url = "https://maven.petrus.dev/public"
+    maven { url = "https://jitpack.io" }
+    maven { url = "https://maven.petrus.dev/public" }
+    repositories {
+        maven {
+            url "https://repo.codemc.io/repository/creatorfromhell/"
+        }
     }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
-    compile "br.com.finalcraft:EverNifeCore:2.0.4"
+    compileOnly fileTree(dir: 'libs')
 
-    compile "com.github.MilkBowl:VaultAPI:1.7.1"
+    compileOnly 'br.com.finalcraft:EverNifeHyCore:2.0.5'
+    compileOnly 'net.cfh.vault:VaultUnlocked:2.18.3'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    compileOnly(files(System.getProperty("user.home") + "/AppData/Roaming/Hytale/install/release/package/game/$game_build/Server/HytaleServer.jar"))
 
     //Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-    testCompileOnly 'org.projectlombok:lombok:1.18.30'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    testCompileOnly 'org.projectlombok:lombok:1.18.42'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "PetrusRepo"
-            url = "https://maven.petrus.dev/public"
-            credentials {
-                username = System.env.PETRUSMAVEN_ACTOR
-                password = System.env.PETRUSMAVEN_TOKEN
-            }
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+processResources {
+    var expandProps = [
+            'name'           : project.name,
+            'version'        : project.version,
+            'group'          : project.group,
+            'author'         : author,
+            'mod_description': mod_description,
+            'website'        : website,
+            'server_version' : server_version,
+            'entry_point'    : entry_point
+    ]
+
+    filesMatching(['manifest.json']) {
+        expand expandProps
     }
-    publications {
-        petrus(MavenPublication) {
-            from(components.java)
-            pom.withXml {
-                asNode().appendNode('url','https://petrus.dev')
-                asNode().dependencies.'*'.each() {
-                    it.parent().remove(it) //Remove all dependencies from pom file
-                }
-            }
-        }
+
+    inputs.properties(expandProps)
+}
+
+def serverRunDir = file("$projectDir/run")
+
+idea.project.settings.runConfigurations {
+    'HytaleServer'(org.jetbrains.gradle.ext.Application) {
+        mainClass = 'com.hypixel.hytale.Main'
+        moduleName = project.idea.module.name + '.main'
+        programParameters = "--allow-op --disable-sentry --assets=$hytaleHome/$patchline/package/game/latest/Assets.zip --mods=${file("src/main/").absolutePath}  --auth-mode=authenticated"
+        workingDirectory = serverRunDir.absolutePath
     }
 }

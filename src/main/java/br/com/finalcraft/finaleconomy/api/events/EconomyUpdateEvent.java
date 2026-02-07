@@ -8,8 +8,8 @@ public class EconomyUpdateEvent extends EconomyEvent {
     private final FEPlayerData playerData;
     private final double amount;
 
-    public EconomyUpdateEvent(FEPlayerData playerData, double amount, boolean isAsync) {
-        super(isAsync);
+    public EconomyUpdateEvent(FEPlayerData playerData, double amount) {
+        super();
         this.playerData = playerData;
         this.amount = amount;
     }

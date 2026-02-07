@@ -1,7 +1,0 @@
-name: FinalEconomy
-version: 1.0.9
-author: EverNife
-main: br.com.finalcraft.finaleconomy.FinalEconomy
-depend: [ Vault ]
-loadbefore:  [ EverNifeCore, Essentials ]
-api-version: 1.13

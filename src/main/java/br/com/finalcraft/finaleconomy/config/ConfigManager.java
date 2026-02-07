@@ -3,7 +3,7 @@ package br.com.finalcraft.finaleconomy.config;
 import br.com.finalcraft.evernifecore.config.Config;
 import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 
 public class ConfigManager {
 

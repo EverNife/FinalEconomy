@@ -4,7 +4,7 @@ import br.com.finalcraft.evernifecore.integration.placeholders.PAPIIntegration;
 import br.com.finalcraft.evernifecore.util.FCInputReader;
 import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 
 import java.util.List;
 import java.util.function.Function;
@@ -18,7 +18,7 @@ public class PlaceholderIntegration {
                 .addParser("top_position", fePlayerData -> fePlayerData.getBaltopPosition(false))
 
                 //Baltop Related
-                .addParser("magnata_name", fePlayerData -> calculateTop(1, FEPlayerData::getPlayerName))
+                .addParser("magnata_name", fePlayerData -> calculateTop(1, FEPlayerData::getName))
                 .addParser("magnata_money", fePlayerData -> calculateTop(1, FEPlayerData::getMoneyFormatted))
                 .addManipulator("top_{number}_{operation}", (playerData, simpleContext) -> {
                     return calculateTop(
@@ -28,7 +28,7 @@ public class PlaceholderIntegration {
                                     case "money":
                                         return topPlayerData.getMoneyFormatted();
                                     case "name":
-                                        return topPlayerData.getPlayerName();
+                                        return topPlayerData.getName();
                                     default:
                                         return null;
                                 }

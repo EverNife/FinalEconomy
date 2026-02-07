@@ -1,5 +1,6 @@
 package br.com.finalcraft.finaleconomy.commands;
 
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
 import br.com.finalcraft.evernifecore.locale.FCLocale;
@@ -8,7 +9,6 @@ import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import org.bukkit.entity.Player;
 
 public class CMDPay {
 
@@ -29,7 +29,7 @@ public class CMDPay {
             aliases = {"pay","pagar"},
             permission = PermissionNodes.COMMAND_PAY
     )
-    public void pay(Player player, FEPlayerData playerData, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
+    public void pay(FPlayer player, FEPlayerData playerData, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
 
         if (!playerData.hasMoney(amount)){
             NOT_ENOUGH_MONEY
@@ -43,13 +43,13 @@ public class CMDPay {
 
         PAY_SUCCESS_SENDER
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
-                .addPlaceholder("%receiver%", target.getPlayerName())
+                .addPlaceholder("%receiver%", target.getName())
                 .send(player);
 
         if (target.isPlayerOnline()){
             PAY_SUCCESS_RECEIVER
                     .addPlaceholder("%amount%", FCMathUtil.toString(amount))
-                    .addPlaceholder("%payer%", playerData.getPlayerName())
+                    .addPlaceholder("%payer%", playerData.getName())
                     .send(target.getPlayer());
         }
     }

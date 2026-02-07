@@ -1,5 +1,6 @@
 package br.com.finalcraft.finaleconomy.commands;
 
+import br.com.finalcraft.evernifecore.api.common.commandsender.FCommandSender;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
 import br.com.finalcraft.evernifecore.commands.finalcmd.help.HelpLine;
@@ -7,11 +8,10 @@ import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
 import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
-import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
+import br.com.finalcraft.evernifecore.util.FCHytaleUtil;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 
 public class CMDBalance {
 
@@ -28,28 +28,28 @@ public class CMDBalance {
             aliases = {"febalance","bal","money","balance"},
             permission = PermissionNodes.COMMAND_BALANCE
     )
-    public void balance(CommandSender sender, HelpLine helpLine, @Arg(name = "[Player]") FEPlayerData target) {
+    public void balance(FCommandSender sender, HelpLine helpLine, @Arg(name = "[Player]") FEPlayerData target) {
 
         if (target != null){
 
-            if (!FCBukkitUtil.hasThePermission(sender,PermissionNodes.COMMAND_BALANCE_OTHER)){
+            if (!FCHytaleUtil.hasThePermission(sender,PermissionNodes.COMMAND_BALANCE_OTHER)){
                 return;
             }
 
             OTHER_BALANCE
                     .addPlaceholder("%balance%", target.getMoneyFormatted())
-                    .addPlaceholder("%target%", target.getPlayerName())
+                    .addPlaceholder("%target%", target.getName())
                     .send(sender);
 
             return;
         }
 
-        if (!(sender instanceof Player)){ //Console MUST specify a player!
+        if (!sender.isPlayer()){ //Console MUST specify a player!
             helpLine.sendTo(sender);
             return;
         }
 
-        FEPlayerData playerData = PlayerController.getPDSection((Player) sender, FEPlayerData.class);
+        FEPlayerData playerData = PlayerController.getPDSection(sender.getUniqueId(), FEPlayerData.class);
 
         SELF_BALANCE
                 .addPlaceholder("%balance%", playerData.getMoneyFormatted())

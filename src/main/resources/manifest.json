@@ -1,0 +1,21 @@
+{
+  "Group": "${author}",
+  "Name": "${name}",
+  "Version": "${version}",
+  "Description": "${mod_description}",
+  "Authors": [
+    {
+      "Name": "${author}"
+    }
+  ],
+  "Website": "${website}",
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Hytale:EntityModule": "*",
+    "EverNife:EverNifeHyCore": "*"
+  },
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "Main": "${entry_point}",
+  "IncludesAssetPack": true
+}

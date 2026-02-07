@@ -1,5 +1,6 @@
 package br.com.finalcraft.finaleconomy.commands;
 
+import br.com.finalcraft.evernifecore.api.common.commandsender.FCommandSender;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
 import br.com.finalcraft.evernifecore.ecplugin.ECPluginManager;
@@ -11,7 +12,6 @@ import br.com.finalcraft.finaleconomy.FinalEconomy;
 import br.com.finalcraft.finaleconomy.PermissionNodes;
 import br.com.finalcraft.finaleconomy.config.FESettings;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import org.bukkit.command.CommandSender;
 
 @FinalCMD(
         aliases = {"finaleconomy","eco","economy"},
@@ -38,11 +38,11 @@ public class CMDEco {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDá uma quantidade específica de money para um jogador!")
             }
     )
-    public void give(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
+    public void give(FCommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
         target.addMoney(amount);
 
         GIVE_SUCCESS
-                .addPlaceholder("%receiver%", target.getPlayerName())
+                .addPlaceholder("%receiver%", target.getName())
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
@@ -78,11 +78,11 @@ public class CMDEco {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bRemove uma quantidade específica de money de um jogador!")
             }
     )
-    public void take(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
+    public void take(FCommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {
 
         if (!target.hasMoney(amount)){
             NOT_ENOUGH_MONEY
-                    .addPlaceholder("%payer%", target.getPlayerName())
+                    .addPlaceholder("%payer%", target.getName())
                     .addPlaceholder("%amount%", amount)
                     .addPlaceholder("%balance%", target.getMoneyFormatted())
                     .send(sender);
@@ -92,7 +92,7 @@ public class CMDEco {
         target.removeMoney(amount);
 
         TAKE_SUCCESS
-                .addPlaceholder("%payer%", target.getPlayerName())
+                .addPlaceholder("%payer%", target.getName())
                 .addPlaceholder("%amount%", FCMathUtil.toString(amount))
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
@@ -124,12 +124,12 @@ public class CMDEco {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDefina o saldo de um jogador para um valor específico!")
             }
     )
-    public void set(CommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0:*]") Double amount) {
+    public void set(FCommandSender sender, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0:*]") Double amount) {
         String oldBalance = target.getMoneyFormatted();
         target.setMoney(amount);
 
         SET_SUCESS
-                .addPlaceholder("%player%", target.getPlayerName())
+                .addPlaceholder("%player%", target.getName())
                 .addPlaceholder("%balance%", target.getMoneyFormatted())
                 .send(sender);
 
@@ -145,7 +145,7 @@ public class CMDEco {
             subcmd = {"reload"},
             permission = PermissionNodes.COMMAND_RELOAD
     )
-    public void reload(CommandSender sender) {
+    public void reload(FCommandSender sender) {
         ECPluginManager.reloadPlugin(sender, FinalEconomy.instance);
     }
 

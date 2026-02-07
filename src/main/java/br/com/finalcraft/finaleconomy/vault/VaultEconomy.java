@@ -3,8 +3,6 @@ package br.com.finalcraft.finaleconomy.vault;
 import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import net.milkbowl.vault.economy.EconomyResponse;
 
-import java.util.List;
-
 public class VaultEconomy extends FinalEcoAbstract {
 
     @Override
@@ -15,21 +13,6 @@ public class VaultEconomy extends FinalEcoAbstract {
     @Override
     public String getName() {
         return "FinalEconomy";
-    }
-
-    @Override
-    public int fractionalDigits() {
-        return 2;
-    }
-
-    @Override
-    public String currencyNamePlural() {
-        return "";
-    }
-
-    @Override
-    public String currencyNameSingular() {
-        return "";
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -82,11 +65,6 @@ public class VaultEconomy extends FinalEcoAbstract {
     //------------------------------------------------------------------------------------------------------------------
 
     @Override
-    public boolean hasBankSupport() {
-        return false;
-    }
-
-    @Override
     public EconomyResponse createBank(String name) {
         return null;
     }
@@ -97,42 +75,12 @@ public class VaultEconomy extends FinalEcoAbstract {
     }
 
     @Override
-    public EconomyResponse deleteBank(String name) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse bankBalance(String name) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse bankHas(String name, double amount) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse bankWithdraw(String name, double amount) {
-        return null;
-    }
-
-    @Override
-    public EconomyResponse bankDeposit(String name, double amount) {
-        return null;
-    }
-
-    @Override
     public EconomyResponse isBankOwner(String name, FEPlayerData playerData) {
         return null;
     }
 
     @Override
     public EconomyResponse isBankMember(String name, FEPlayerData playerData) {
-        return null;
-    }
-
-    @Override
-    public List<String> getBanks() {
         return null;
     }
 

@@ -1,7 +1,7 @@
 package br.com.finalcraft.finaleconomy.commands;
 
 import br.com.finalcraft.evernifecore.commands.finalcmd.FinalCMDManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 
 public class CommandRegisterer {
 
