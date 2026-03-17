@@ -2,6 +2,7 @@ package br.com.finalcraft.finaleconomy;
 
 import br.com.finalcraft.evernifecore.EverNifeCore;
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
+import br.com.finalcraft.evernifecore.util.FCReflectionUtil;
 import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
 import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
@@ -9,6 +10,7 @@ import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
 import br.com.finalcraft.finaleconomy.integration.EverNifeCoreIntegration;
 import br.com.finalcraft.finaleconomy.integration.PlaceholderIntegration;
+import br.com.finalcraft.finaleconomy.vault.vault2.VaultEconomyVaultV2;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
@@ -36,6 +38,11 @@ public class FinalEconomy extends JavaPlugin{
 
         getLogger().info("§aIntegrating to VAULT...");
         this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
+
+        if (FCReflectionUtil.isClassLoaded("net.milkbowl.vault2.economy.Economy")){
+            getLogger().info("§aIntegrating to VAULT v2...");
+            this.getServer().getServicesManager().register(net.milkbowl.vault2.economy.Economy.class, new VaultEconomyVaultV2(), this, ServicePriority.Highest);
+        }
 
         getLogger().info("§aLoading Configuration...");
         ConfigManager.initialize(this);
