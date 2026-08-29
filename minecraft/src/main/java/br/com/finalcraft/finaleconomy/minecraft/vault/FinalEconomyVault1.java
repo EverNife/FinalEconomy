@@ -1,7 +1,7 @@
 package br.com.finalcraft.finaleconomy.minecraft.vault;
 
-import br.com.finalcraft.evernifecore.economy.EcoResponse;
 import br.com.finalcraft.evernifecore.config.uuids.UUIDsController;
+import br.com.finalcraft.evernifecore.economy.EcoResponse;
 import br.com.finalcraft.finaleconomy.common.economy.EconomyService;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
