@@ -1,2 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'FinalEconomy'
 
+include 'common'
+include 'minecraft'
+include 'hytale'

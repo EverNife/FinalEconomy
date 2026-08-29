@@ -1,0 +1,12 @@
+[versions]
+shadow = "9.4.2"
+# Build-only annotation processor (FinalCraft fork): rides JDK 25's javac, so the dual-target
+# modules compile on the single Java 25 toolchain and still emit Java 8 bytecode - no separate
+# JDK 17 compiler pin needed.
+jabel = "1.2.0"
+
+[libraries]
+jabel = { module = "br.com.finalcraft:jabel", version.ref = "jabel" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

@@ -1,72 +1,72 @@
-group 'br.com.finalcraft'
-version '1.0.9'
+subprojects {
+    apply plugin: 'java'
 
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+    group = 'br.com.finalcraft'
+    version = '2.0.0'
 
-sourceCompatibility = 1.8
-
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-repositories {
-    flatDir {
-        dirs 'libs'
+    // One toolchain for the whole build: launch Gradle with JDK 25 (Gradle 9.5.1 runs on it
+    // directly). This toolchain compiles/runs everything EXCEPT the dual-target compileJava
+    // override below, where :common and :minecraft emit Java 8 bytecode.
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
     }
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
-    }
-    maven {
-        url = "https://maven.petrus.dev/public"
-    }
-    maven { url 'https://repo.codemc.io/repository/creatorfromhell/' } //VaultUnlocked
-}
 
-dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
-    compileOnly 'br.com.finalcraft.EverNifeCore:minecraft:2.1.1'
-
-    compile "com.github.MilkBowl:VaultAPI:1.7.1"
-    compileOnly 'net.cfh.vault:VaultUnlocked:2.18.3'
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-
-    //Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-    testCompileOnly 'org.projectlombok:lombok:1.18.30'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-}
-
-publishing {
     repositories {
-        maven {
-            name = "PetrusRepo"
-            url = "https://maven.petrus.dev/public"
-            credentials {
-                username = System.env.PETRUSMAVEN_ACTOR
-                password = System.env.PETRUSMAVEN_TOKEN
-            }
-            authentication {
-                basic(BasicAuthentication)
+        mavenLocal() // EverNifeCore artifacts published here via :<module>:publishToMavenLocal
+        mavenCentral()
+        maven { url = 'https://maven.petrus.dev/public' }
+        maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+        maven { url = 'https://jitpack.io' }                                     // VaultAPI (Vault 1)
+        maven { url = 'https://repo.codemc.io/repository/creatorfromhell/' }     // VaultUnlocked (Vault 2)
+    }
+
+    dependencies {
+        // Provided (canonical, not relocated) by EverNifeCore at runtime. Declared here only to
+        // silence "unknown enum constant Visibility.*" warnings from PDSection's @JsonAutoDetect.
+        compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.15.4'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        // EverNifeCore reads command parameter names through reflection.
+        options.compilerArgs.add('-parameters')
+    }
+
+    // Lets the Java-8-bytecode modules still RESOLVE a dependency published for a newer JVM - the
+    // VaultUnlocked API is compiled for 25, and without this Gradle refuses it outright ("only
+    // compatible with JVM runtime version 25 or newer") instead of letting the compileOnly through.
+    // Gradle 9 forbids attributes on declarable-only buckets, so only the resolvable/consumable ones
+    // are tagged. Same override EverNifeCore's own build carries, for the same reason.
+    configurations.configureEach {
+        if (canBeResolved || canBeConsumed) {
+            attributes {
+                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
             }
         }
     }
-    publications {
-        petrus(MavenPublication) {
-            from(components.java)
-            pom.withXml {
-                asNode().appendNode('url','https://petrus.dev')
-                asNode().dependencies.'*'.each() {
-                    it.parent().remove(it) //Remove all dependencies from pom file
-                }
-            }
-        }
+}
+
+// ======================================================================
+//  Dual-target: modern Java source syntax -> Java 8 bytecode (:common, :minecraft)
+//
+//  These modules are written in modern Java syntax (var, switch expressions, text blocks, ...)
+//  but must run on a Java 8 JVM (broad Minecraft-server compatibility). The FinalCraft Jabel fork
+//  (an annotation processor) lifts javac's source-level check so the Java 25 compiler can emit
+//  Java 8 bytecode, while `options.release = 8` keeps the *API* floor honest - no Java 9+ library
+//  APIs, which would compile fine yet crash on an old server.
+//
+//  Unlike the upstream Jabel (which only rode javac internals up to JDK 17), the fork works on
+//  JDK 25, so these modules compile on the single Java 25 toolchain - no separate compiler pin.
+//  :hytale is intentionally NOT here: it compiles to Java 25 with the main toolchain.
+// ======================================================================
+configure([project(':common'), project(':minecraft')]) {
+    dependencies {
+        annotationProcessor libs.jabel
+        compileOnly libs.jabel
+    }
+
+    compileJava {
+        sourceCompatibility = 25 // modern *syntax* (IDE hint; Jabel lifts javac's source check)
+        options.release = 8      // Java 8 *bytecode* and *API* floor
     }
 }

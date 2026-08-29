@@ -1,0 +1,26 @@
+// Platform-agnostic module: business logic, config models, player data, locale, commands and
+// placeholders that work on BOTH Minecraft and Hytale. It must NEVER import Bukkit or Hytale
+// types - only the EverNifeCore platform-agnostic API.
+//
+// Toolchain / dual-target (modern syntax -> Java 8 bytecode) is configured centrally in the
+// root build.gradle.
+
+dependencies {
+    // The shared EverNifeCore API, compiled against the RELOCATED view: Jackson resolves to the same
+    // br.com.finalcraft.everydatabase.libs.jackson.* names the deployed core carries at runtime, so the
+    // schema-migration API (EntitySchemaStep.upgrade(ObjectNode)) links instead of failing at enable.
+    // Provided at runtime by the EverNifeCore plugin/core.
+    compileOnly 'br.com.finalcraft:evernifecore-common-relocated:3.0.1'
+
+    // Compile-time-only stubs for classes each platform ships for real under the same name (the
+    // "platoverride" pattern). Declaring an event here needs them: the agnostic base ECEvent has no
+    // agnostic implementation, so `extends ECEvent implements IECEvent` compiles against the stub
+    // and links against the platform's real class at runtime. Never packaged.
+    compileOnly 'br.com.finalcraft:evernifecore-api-contracts:3.0.1'
+
+    // The Vault 2 (VaultUnlocked) economy contract: UUID + BigDecimal, no server type anywhere, and
+    // the SAME interface both platforms hand to their services manager - which is why this plugin's
+    // economy bridge lives here instead of in :minecraft. Provided at runtime by the VaultUnlocked
+    // plugin/mod; a server without it simply never links these classes.
+    compileOnly 'net.cfh.vault:VaultUnlocked:2.18.3'
+}

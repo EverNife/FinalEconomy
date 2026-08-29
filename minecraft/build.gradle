@@ -1,0 +1,41 @@
+plugins {
+    alias(libs.plugins.shadow)
+}
+
+// Toolchain / dual-target (modern syntax -> Java 8 bytecode) is configured in the root build.
+
+dependencies {
+    implementation project(':common')
+
+    // Provided at runtime by the server (the EverNifeCore plugin). The minecraft artifact is a
+    // shaded fat jar that already carries the common API, so no separate evernifecore-common here.
+    compileOnly 'br.com.finalcraft:evernifecore-minecraft:3.0.1'
+    compileOnly 'org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT'
+
+    // Both Vault generations, compileOnly: the server provides them and neither is bundled. Vault 1
+    // is the OfflinePlayer-keyed Economy this module implements; Vault 2 is only needed to hand the
+    // :common bridge to Bukkit's ServicesManager.
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
+    compileOnly 'net.cfh.vault:VaultUnlocked:2.18.3'
+}
+
+shadowJar {
+    archiveBaseName.set('FinalEconomy')
+    archiveClassifier.set('')
+    // Bundle only our own ':common' module. EverNifeCore stays external (compileOnly).
+}
+
+// Only the shaded jar is deployable; drop the thin jar (it lacks :common) to avoid confusion.
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand version: project.version
+    }
+}

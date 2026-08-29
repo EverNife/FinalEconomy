@@ -1,0 +1,49 @@
+plugins {
+    alias(libs.plugins.shadow)
+}
+
+// Hytale compiles to plain Java 25 with the main toolchain (root build.gradle); it is NOT in the
+// dual-target Java-8 list, so records and modern APIs are fine here.
+
+repositories {
+    maven {
+        name = 'hytale'
+        url = 'https://maven.hytale.com/release'
+    }
+}
+
+dependencies {
+    implementation project(':common')
+
+    // Hytale platform API. The published evernifecore-hytale jar is thin (the shared API ships as
+    // a separate artifact), so evernifecore-common is added explicitly alongside it.
+    compileOnly 'br.com.finalcraft:evernifecore-hytale:3.0.1'
+    compileOnly 'br.com.finalcraft:evernifecore-common:3.0.1'
+
+    // Hytale Server API (from maven.hytale.com). Floating version, mirroring EverNifeCore.
+    compileOnly 'com.hypixel.hytale:Server:+'
+
+    // VaultUnlocked is how a Hytale server publishes its economy; this module only needs the type to
+    // hand the :common bridge to VaultUnlockedServicesManager.
+    compileOnly 'net.cfh.vault:VaultUnlocked:2.18.3'
+}
+
+shadowJar {
+    archiveBaseName.set('FinalEconomy')
+    archiveClassifier.set('Hytale')
+}
+
+// Only the shaded jar is deployable; drop the thin jar (it lacks :common) to avoid confusion.
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
+}
+
+processResources {
+    filesMatching('manifest.json') {
+        expand version: project.version
+    }
+}
