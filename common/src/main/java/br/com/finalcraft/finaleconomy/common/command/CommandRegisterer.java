@@ -1,17 +1,21 @@
-package br.com.finalcraft.finaleconomy.commands;
+package br.com.finalcraft.finaleconomy.common.command;
 
 import br.com.finalcraft.evernifecore.commands.finalcmd.FinalCMDManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import br.com.finalcraft.evernifecore.ecplugin.ECPluginData;
 
-public class CommandRegisterer {
+/**
+ * Registers every command in one place (both platform bootstraps call this).
+ */
+public final class CommandRegisterer {
 
-    public static void registerCommands(JavaPlugin pluginInstance) {
-
-        FinalCMDManager.registerCommand(pluginInstance, CMDBalance.class);
-        FinalCMDManager.registerCommand(pluginInstance, CMDBalanceTop.class);
-        FinalCMDManager.registerCommand(pluginInstance, CMDEco.class);
-        FinalCMDManager.registerCommand(pluginInstance, CMDPay.class);
-
+    private CommandRegisterer() {
     }
 
+    public static void registerCommands(ECPluginData ecPluginData) {
+        FinalCMDManager.registerCommand(ecPluginData, CMDFinalEconomy.class);
+        FinalCMDManager.registerCommand(ecPluginData, CMDBalance.class);
+        FinalCMDManager.registerCommand(ecPluginData, CMDBalanceTop.class);
+        FinalCMDManager.registerCommand(ecPluginData, CMDEco.class);
+        FinalCMDManager.registerCommand(ecPluginData, CMDPay.class);
+    }
 }

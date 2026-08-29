@@ -1,7 +1,9 @@
 name: FinalEconomy
-version: 1.0.9
+version: ${version}
 author: EverNife
-main: br.com.finalcraft.finaleconomy.FinalEconomy
-depend: [ Vault ]
-loadbefore:  [ EverNifeCore, Essentials ]
+description: A SIMPLE economy system with a single money type, published through Vault
+main: br.com.finalcraft.finaleconomy.minecraft.FinalEconomyBukkitPlugin
 api-version: 1.13
+depend: [EverNifeCore, Vault]
+softdepend: [PlaceholderAPI, VaultUnlocked]
+loadbefore: [Essentials]

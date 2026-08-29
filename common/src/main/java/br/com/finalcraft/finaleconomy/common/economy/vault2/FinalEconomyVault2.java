@@ -1,17 +1,40 @@
-package br.com.finalcraft.finaleconomy.vault.vault2;
+package br.com.finalcraft.finaleconomy.common.economy.vault2;
 
-import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
-import br.com.finalcraft.evernifecore.util.FCMathUtil;
-import br.com.finalcraft.finaleconomy.api.IFinalEconomy;
-import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
-import net.milkbowl.vault.economy.EconomyResponse;
+import br.com.finalcraft.evernifecore.config.uuids.UUIDsController;
+import br.com.finalcraft.evernifecore.economy.EcoResponse;
+import br.com.finalcraft.finaleconomy.common.economy.EconomyService;
 import net.milkbowl.vault2.economy.AccountPermission;
 import net.milkbowl.vault2.economy.Economy;
+import net.milkbowl.vault2.economy.EconomyResponse;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
-public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy {
+/**
+ * This plugin as a Vault 2 (VaultUnlocked) economy: UUID-keyed, BigDecimal-valued, single currency.
+ *
+ * <p>Lives in the agnostic module because the contract names no server type, and both platforms
+ * publish an economy through it - the Bukkit {@code ServicesManager} and the Hytale
+ * {@code VaultUnlockedServicesManager} take this same class.</p>
+ *
+ * <p>Shared accounts and multiple currencies are not supported and every such answer says so.
+ * Account existence is always true: a balance exists for anyone the server has ever seen.</p>
+ */
+public class FinalEconomyVault2 implements Economy {
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getName() {
+        return "FinalEconomy";
+    }
 
     @Override
     public boolean hasSharedAccountSupport() {
@@ -30,7 +53,7 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
 
     @Override
     public String format(BigDecimal amount) {
-        return FCMathUtil.toString(amount.doubleValue());
+        return EconomyService.format(amount.doubleValue());
     }
 
     @Override
@@ -70,12 +93,16 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
 
     @Override
     public Collection<String> currencies() {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
+
+    // ------------------------------------------------------------------
+    //  Accounts
+    // ------------------------------------------------------------------
 
     @Override
     public boolean createAccount(UUID accountID, String name) {
-        return createPlayerAccount(PlayerController.getPDSection(accountID, FEPlayerData.class));
+        return accountID != null; //only create an account for a REAL player
     }
 
     @Override
@@ -95,17 +122,17 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
 
     @Override
     public Map<UUID, String> getUUIDNameMap() {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     @Override
     public Optional<String> getAccountName(UUID accountID) {
-        return Optional.empty();
+        return Optional.ofNullable(UUIDsController.getNameFromUUID(accountID));
     }
 
     @Override
     public boolean hasAccount(UUID accountID) {
-        return hasAccount(PlayerController.getPDSection(accountID, FEPlayerData.class));
+        return true; //we assume every player has an account
     }
 
     @Override
@@ -138,9 +165,13 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
         return accountSupportsCurrency(plugin, accountID, currency);
     }
 
+    // ------------------------------------------------------------------
+    //  Balance
+    // ------------------------------------------------------------------
+
     @Override
     public BigDecimal getBalance(String pluginName, UUID accountID) {
-        return BigDecimal.valueOf(getBalance(PlayerController.getPDSection(accountID, FEPlayerData.class)));
+        return BigDecimal.valueOf(EconomyService.getBalance(accountID));
     }
 
     @Override
@@ -155,7 +186,7 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
 
     @Override
     public boolean has(String pluginName, UUID accountID, BigDecimal amount) {
-        return has(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
+        return EconomyService.has(accountID, amount.doubleValue());
     }
 
     @Override
@@ -169,46 +200,52 @@ public abstract class FinalEcoAbstractVaultV2 implements Economy, IFinalEconomy 
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, BigDecimal amount) {
-        EconomyResponse oldResponse = withdrawPlayer(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
-        return new net.milkbowl.vault2.economy.EconomyResponse(
-                BigDecimal.valueOf(oldResponse.amount),
-                BigDecimal.valueOf(oldResponse.balance),
-                net.milkbowl.vault2.economy.EconomyResponse.ResponseType.valueOf(oldResponse.type.name()),
-                oldResponse.errorMessage
-        );
+    public EconomyResponse withdraw(String pluginName, UUID accountID, BigDecimal amount) {
+        return responseOf(EconomyService.withdraw(accountID, amount.doubleValue()));
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
+    public EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
         return withdraw(pluginName, accountID, amount);
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
+    public EconomyResponse withdraw(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
         return withdraw(pluginName, accountID, amount);
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, BigDecimal amount) {
-        EconomyResponse oldResponse = depositPlayer(PlayerController.getPDSection(accountID, FEPlayerData.class), amount.doubleValue());
-        return new net.milkbowl.vault2.economy.EconomyResponse(
-                BigDecimal.valueOf(oldResponse.amount),
-                BigDecimal.valueOf(oldResponse.balance),
-                net.milkbowl.vault2.economy.EconomyResponse.ResponseType.valueOf(oldResponse.type.name()),
-                oldResponse.errorMessage
-        );
+    public EconomyResponse deposit(String pluginName, UUID accountID, BigDecimal amount) {
+        return responseOf(EconomyService.deposit(accountID, amount.doubleValue()));
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
+    public EconomyResponse deposit(String pluginName, UUID accountID, String worldName, BigDecimal amount) {
         return deposit(pluginName, accountID, amount);
     }
 
     @Override
-    public net.milkbowl.vault2.economy.EconomyResponse deposit(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
+    public EconomyResponse deposit(String pluginName, UUID accountID, String worldName, String currency, BigDecimal amount) {
         return deposit(pluginName, accountID, amount);
     }
+
+    private static EconomyResponse responseOf(EcoResponse response) {
+        return new EconomyResponse(
+                response.getAmount(),
+                response.getBalance(),
+                response.isSuccess()
+                        ? EconomyResponse.ResponseType.SUCCESS
+                        : EconomyResponse.ResponseType.FAILURE,
+                response.isSuccess() ? null : failureTextOf(response));
+    }
+
+    private static String failureTextOf(EcoResponse response) {
+        return response.getDetail() != null ? response.getDetail() : response.getReason().name();
+    }
+
+    // ------------------------------------------------------------------
+    //  Shared accounts - unsupported, and each answer says so
+    // ------------------------------------------------------------------
 
     @Override
     public boolean createSharedAccount(String pluginName, UUID accountID, String name, UUID owner) {

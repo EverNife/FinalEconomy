@@ -1,74 +1,50 @@
-package br.com.finalcraft.finaleconomy;
+package br.com.finalcraft.finaleconomy.minecraft;
 
-import br.com.finalcraft.evernifecore.EverNifeCore;
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
-import br.com.finalcraft.evernifecore.util.FCReflectionUtil;
-import br.com.finalcraft.finaleconomy.api.FinalEconomyAPI;
-import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
-import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
-import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
-import br.com.finalcraft.finaleconomy.config.ConfigManager;
-import br.com.finalcraft.finaleconomy.integration.PlaceholderIntegration;
-import br.com.finalcraft.finaleconomy.vault.vault2.VaultEconomyVaultV2;
+import br.com.finalcraft.evernifecore.minecraft.ecplugin.ECBukkitPlugin;
+import br.com.finalcraft.finaleconomy.common.FEBootstrap;
+import br.com.finalcraft.finaleconomy.minecraft.vault.FinalEconomyVault1;
+import br.com.finalcraft.finaleconomy.minecraft.vault.VaultUnlockedIntegration;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.ServicesManager;
 
+/**
+ * Bukkit entry point. The shared wiring lives in {@link FEBootstrap}; only publishing this plugin as
+ * the server's economy is Bukkit-specific.
+ */
 @ECPlugin(
         spigotID = "97740",
         bstatsID = "13365"
 )
-public class FinalEconomy extends JavaPlugin{
+public class FinalEconomyBukkitPlugin extends ECBukkitPlugin implements FEBootstrap {
 
-    public static FinalEconomy instance; { instance = this; } //Instance as early as possible!
+    private final FinalEconomyVault1 vaultEconomy = new FinalEconomyVault1();
+
+    /**
+     * Registered after the shared wiring, not before it: the balance section has to be registered
+     * before anything can be charged through these services. Both are inside the same enable, so
+     * they are still up before any other plugin is asked to work.
+     */
+    @Override
+    public void onECPluginEnablePost() {
+        ServicesManager servicesManager = getServer().getServicesManager();
+
+        getLog().info("Integrating to VAULT...");
+        servicesManager.register(Economy.class, vaultEconomy, this, ServicePriority.Highest);
+
+        if (VaultUnlockedIntegration.isPresent()) {
+            getLog().info("Integrating to VAULT v2...");
+            VaultUnlockedIntegration.register(servicesManager, this);
+        }
+    }
 
     @Override
-    public void onEnable() {
-        try {
-            EverNifeCore.class.getSimpleName(); //This will throw NoClassDefFoundError if EverNifeCore is not Present
-        }catch (NoClassDefFoundError e){
-            for (int i = 0; i < 10; i++) {
-                this.getLogger().severe("FinalEconomy Requires the plugin 'EverNifeCore' to work!");
-            }
-            throw e;
+    public void onECPluginShutdownPost() {
+        ServicesManager servicesManager = getServer().getServicesManager();
+        servicesManager.unregister(Economy.class, vaultEconomy);
+        if (VaultUnlockedIntegration.isPresent()) {
+            VaultUnlockedIntegration.unregister(servicesManager);
         }
-
-        getLogger().info("§aIntegrating to VAULT...");
-        this.getServer().getServicesManager().register(Economy.class, FinalEconomyAPI.getVaultAPI(), this, ServicePriority.Highest);
-
-        if (FCReflectionUtil.isClassLoaded("net.milkbowl.vault2.economy.Economy")){
-            getLogger().info("§aIntegrating to VAULT v2...");
-            this.getServer().getServicesManager().register(net.milkbowl.vault2.economy.Economy.class, new VaultEconomyVaultV2(), this, ServicePriority.Highest);
-        }
-
-        getLogger().info("§aLoading Configuration...");
-        ConfigManager.initialize(this);
-
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                //Register commands only after all other plugins are loaded
-                //This is required to override EssentialsECO commands
-                getLogger().info("§aRegistering Commands...");
-                CommandRegisterer.registerCommands(FinalEconomy.this);
-                CMDBalanceTop.instance.recalculateBalTop();
-
-                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
-                    getLogger().info("§aRegistering Placeholders...");
-                    PlaceholderIntegration.initialize(instance);
-                }
-
-            }
-        }.runTaskLater(this, 1);
     }
-
-    @ECPlugin.Reload(reloadAfter = "EverNifeCore")
-    public void reload(){
-        ConfigManager.initialize(this);
-        CMDBalanceTop.instance.recalculateBalTop();
-        BaltopTrackingCenter.refreshBalTop(true);
-    }
-
 }

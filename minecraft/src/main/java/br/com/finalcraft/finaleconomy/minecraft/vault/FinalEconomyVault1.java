@@ -1,28 +1,70 @@
-package br.com.finalcraft.finaleconomy.vault;
+package br.com.finalcraft.finaleconomy.minecraft.vault;
 
-import br.com.finalcraft.evernifecore.config.playerdata.PlayerController;
-import br.com.finalcraft.evernifecore.util.FCMathUtil;
-import br.com.finalcraft.finaleconomy.api.IFinalEconomy;
-import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
+import br.com.finalcraft.evernifecore.economy.EcoResponse;
+import br.com.finalcraft.evernifecore.config.uuids.UUIDsController;
+import br.com.finalcraft.finaleconomy.common.economy.EconomyService;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 
-public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * This plugin as a Vault 1 economy - the {@code OfflinePlayer}-keyed generation, which is why it
+ * lives in the Bukkit module while the Vault 2 bridge is platform-agnostic.
+ *
+ * <p>Banks are not supported. Every bank method answers with a refusal carrying the reason instead
+ * of {@code null}: a caller that does not check {@link #hasBankSupport()} first would otherwise get
+ * a NullPointerException inside its own code.</p>
+ */
+public class FinalEconomyVault1 implements Economy {
+
+    private static final String NO_BANK_SUPPORT = "FinalEconomy does not support bank accounts";
 
     @Override
-    public String format(double amount) {
-        return FCMathUtil.toString(amount);
+    public boolean isEnabled() {
+        return true;
     }
 
     @Override
+    public String getName() {
+        return "FinalEconomy";
+    }
+
+    @Override
+    public int fractionalDigits() {
+        return 2;
+    }
+
+    @Override
+    public String currencyNamePlural() {
+        return "";
+    }
+
+    @Override
+    public String currencyNameSingular() {
+        return "";
+    }
+
+    @Override
+    public String format(double amount) {
+        return EconomyService.format(amount);
+    }
+
+    // ------------------------------------------------------------------
+    //  Accounts
+    // ------------------------------------------------------------------
+
+    @Override
     public boolean hasAccount(String playerName) {
-        return hasAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return uuidOf(playerName) != null;
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer player) {
-        return hasAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+        return true; //we assume every player has an account
     }
 
     @Override
@@ -36,13 +78,38 @@ public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
     }
 
     @Override
+    public boolean createPlayerAccount(String playerName) {
+        return hasAccount(playerName);
+    }
+
+    @Override
+    public boolean createPlayerAccount(OfflinePlayer player) {
+        return player != null; //only create an account for a REAL player
+    }
+
+    @Override
+    public boolean createPlayerAccount(String playerName, String worldName) {
+        return createPlayerAccount(playerName);
+    }
+
+    @Override
+    public boolean createPlayerAccount(OfflinePlayer player, String worldName) {
+        return createPlayerAccount(player);
+    }
+
+    // ------------------------------------------------------------------
+    //  Balance
+    // ------------------------------------------------------------------
+
+    @Override
     public double getBalance(String playerName) {
-        return getBalance(PlayerController.getPDSection(playerName, FEPlayerData.class));
+        UUID uuid = uuidOf(playerName);
+        return uuid == null ? 0D : EconomyService.getBalance(uuid);
     }
 
     @Override
     public double getBalance(OfflinePlayer player) {
-        return getBalance(PlayerController.getPDSection(player, FEPlayerData.class));
+        return EconomyService.getBalance(player.getUniqueId());
     }
 
     @Override
@@ -57,12 +124,13 @@ public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
 
     @Override
     public boolean has(String playerName, double amount) {
-        return has(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        UUID uuid = uuidOf(playerName);
+        return uuid != null && EconomyService.has(uuid, amount);
     }
 
     @Override
     public boolean has(OfflinePlayer player, double amount) {
-        return has(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return EconomyService.has(player.getUniqueId(), amount);
     }
 
     @Override
@@ -77,12 +145,13 @@ public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        UUID uuid = uuidOf(playerName);
+        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.withdraw(uuid, amount));
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
-        return withdrawPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return responseOf(EconomyService.withdraw(player.getUniqueId(), amount));
     }
 
     @Override
@@ -97,12 +166,13 @@ public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
 
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
-        return depositPlayer(PlayerController.getPDSection(playerName, FEPlayerData.class), amount);
+        UUID uuid = uuidOf(playerName);
+        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.deposit(uuid, amount));
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
-        return depositPlayer(PlayerController.getPDSection(player, FEPlayerData.class), amount);
+        return responseOf(EconomyService.deposit(player.getUniqueId(), amount));
     }
 
     @Override
@@ -115,55 +185,102 @@ public abstract class FinalEcoAbstract implements Economy, IFinalEconomy {
         return depositPlayer(player, amount);
     }
 
+    // ------------------------------------------------------------------
+    //  Banks - unsupported, and every answer says so instead of being null
+    // ------------------------------------------------------------------
+
+    @Override
+    public boolean hasBankSupport() {
+        return false;
+    }
+
     @Override
     public EconomyResponse createBank(String name, String player) {
-        if (player == null) return createBank(name);
-        return createBank(name, PlayerController.getPDSection(player, FEPlayerData.class));
+        return noBankSupport();
     }
 
     @Override
     public EconomyResponse createBank(String name, OfflinePlayer player) {
-        if (player == null) return createBank(name);
-        return createBank(name, PlayerController.getPDSection(player, FEPlayerData.class));
+        return noBankSupport();
+    }
+
+    @Override
+    public EconomyResponse deleteBank(String name) {
+        return noBankSupport();
+    }
+
+    @Override
+    public EconomyResponse bankBalance(String name) {
+        return noBankSupport();
+    }
+
+    @Override
+    public EconomyResponse bankHas(String name, double amount) {
+        return noBankSupport();
+    }
+
+    @Override
+    public EconomyResponse bankWithdraw(String name, double amount) {
+        return noBankSupport();
+    }
+
+    @Override
+    public EconomyResponse bankDeposit(String name, double amount) {
+        return noBankSupport();
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, String playerName) {
-        return isBankOwner(name, PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return noBankSupport();
     }
 
     @Override
     public EconomyResponse isBankOwner(String name, OfflinePlayer player) {
-        return isBankOwner(name, PlayerController.getPDSection(player, FEPlayerData.class));
+        return noBankSupport();
     }
 
     @Override
     public EconomyResponse isBankMember(String name, String playerName) {
-        return isBankMember(name, PlayerController.getPDSection(playerName, FEPlayerData.class));
+        return noBankSupport();
     }
 
     @Override
     public EconomyResponse isBankMember(String name, OfflinePlayer player) {
-        return isBankMember(name, PlayerController.getPDSection(player, FEPlayerData.class));
+        return noBankSupport();
     }
 
     @Override
-    public boolean createPlayerAccount(String playerName) {
-        return createPlayerAccount(PlayerController.getPDSection(playerName, FEPlayerData.class));
+    public List<String> getBanks() {
+        return Collections.emptyList();
     }
 
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer player) {
-        return createPlayerAccount(PlayerController.getPDSection(player, FEPlayerData.class));
+    // ------------------------------------------------------------------
+
+    /** The uuid behind a name the server has seen before, or null when it has seen none. */
+    private static UUID uuidOf(String playerName) {
+        return UUIDsController.getUUIDFromName(playerName);
     }
 
-    @Override
-    public boolean createPlayerAccount(String playerName, String worldName) {
-        return createPlayerAccount(playerName);
+    private static EconomyResponse responseOf(EcoResponse response) {
+        return new EconomyResponse(
+                response.getAmount().doubleValue(),
+                response.getBalance().doubleValue(),
+                response.isSuccess()
+                        ? EconomyResponse.ResponseType.SUCCESS
+                        : EconomyResponse.ResponseType.FAILURE,
+                response.isSuccess() ? null : failureTextOf(response));
     }
 
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer player, String worldName) {
-        return createPlayerAccount(player);
+    private static String failureTextOf(EcoResponse response) {
+        return response.getDetail() != null ? response.getDetail() : response.getReason().name();
+    }
+
+    private static EconomyResponse unknownPlayer(String playerName) {
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE,
+                "No player named '" + playerName + "' is known to this server");
+    }
+
+    private static EconomyResponse noBankSupport() {
+        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, NO_BANK_SUPPORT);
     }
 }

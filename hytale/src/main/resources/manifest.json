@@ -1,0 +1,23 @@
+{
+  "Group": "br.com.finalcraft",
+  "Name": "FinalEconomy",
+  "Version": "${version}",
+  "Description": "A SIMPLE economy system with a single money type, published through VaultUnlocked",
+  "Authors": [
+    {
+      "Name": "EverNife"
+    }
+  ],
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Hytale:EntityModule": "*",
+    "EverNife:EverNifeCore": "*"
+  },
+  "OptionalDependencies": {
+    "HelpChat:PlaceholderAPI": "*",
+    "TheNewEconomy:VaultUnlocked": "*"
+  },
+  "DisabledByDefault": false,
+  "Main": "br.com.finalcraft.finaleconomy.hytale.FinalEconomyHytalePlugin",
+  "IncludesAssetPack": false
+}
