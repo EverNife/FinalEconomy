@@ -14,7 +14,7 @@ import br.com.finalcraft.finaleconomy.config.data.FEPlayerData;
 import org.bukkit.command.CommandSender;
 
 @FinalCMD(
-        aliases = {"finaleconomy","eco","economy"},
+        aliases = {"finaleconomy", "feeco", "eco", "economy"},
         permission = PermissionNodes.COMMAND_ECO
 )
 public class CMDEco {

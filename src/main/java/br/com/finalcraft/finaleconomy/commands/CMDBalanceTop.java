@@ -52,7 +52,7 @@ public class CMDBalanceTop {
     }
 
     @FinalCMD(
-            aliases = {"balancetop","baltop","moneytop","febalancetop"},
+            aliases = {"febalancetop", "balancetop","baltop","moneytop"},
             permission = PermissionNodes.COMMAND_BALANCETOP
     )
     public void top(CommandSender sender, MultiArgumentos argumentos, @Arg(name = "[page]", context = "[1:*]") Integer page){

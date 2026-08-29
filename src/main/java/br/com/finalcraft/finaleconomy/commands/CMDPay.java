@@ -26,7 +26,7 @@ public class CMDPay {
 
 
     @FinalCMD(
-            aliases = {"pay","pagar"},
+            aliases = {"fepay","pay","pagar"},
             permission = PermissionNodes.COMMAND_PAY
     )
     public void pay(Player player, FEPlayerData playerData, @Arg(name = "<Player>") FEPlayerData target, @Arg(name = "<Amount>", context = "[0.01:*]") Double amount) {

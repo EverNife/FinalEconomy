@@ -8,7 +8,6 @@ import br.com.finalcraft.finaleconomy.baltop.BaltopTrackingCenter;
 import br.com.finalcraft.finaleconomy.commands.CMDBalanceTop;
 import br.com.finalcraft.finaleconomy.commands.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.config.ConfigManager;
-import br.com.finalcraft.finaleconomy.integration.EverNifeCoreIntegration;
 import br.com.finalcraft.finaleconomy.integration.PlaceholderIntegration;
 import br.com.finalcraft.finaleconomy.vault.vault2.VaultEconomyVaultV2;
 import net.milkbowl.vault.economy.Economy;
@@ -50,9 +49,6 @@ public class FinalEconomy extends JavaPlugin{
         new BukkitRunnable(){
             @Override
             public void run() {
-                //Integrate to EverNifeCore after server startup
-                EverNifeCoreIntegration.initialize();
-
                 //Register commands only after all other plugins are loaded
                 //This is required to override EssentialsECO commands
                 getLogger().info("§aRegistering Commands...");
