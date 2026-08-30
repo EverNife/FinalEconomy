@@ -11,6 +11,7 @@ import br.com.finalcraft.everylibs.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.common.FEBootstrap;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
 import br.com.finalcraft.finaleconomy.common.config.ConfigManager;
+import br.com.finalcraft.evernifecore.playerdata.PlayerData;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 
 import java.math.BigDecimal;
@@ -21,6 +22,10 @@ import java.math.BigDecimal;
  * <p>Amounts arrive as {@code Double} because that is what a human types and what the argument
  * parser produces; they become a {@link BigDecimal} at this boundary, so the exactness the balance is
  * kept with starts here instead of after a round of binary arithmetic.</p>
+ *
+ * <p>The target is declared as a {@code PlayerData}, not as the balance row: the wallet belongs to the
+ * account and carries no name or online state, and every message here says whose balance moved. One
+ * token buys both.</p>
  */
 @FinalCMD(
         aliases = {"finaleconomy", "feeco", "eco", "economy"},
@@ -47,20 +52,21 @@ public class CMDFinalEconomy {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDá uma quantidade específica de money para um jogador!")
             }
     )
-    public void give(FCommandSender sender, @Arg("<Player>") FEPlayerData target,
+    public void give(FCommandSender sender, @Arg("<Player>") PlayerData target,
                      @Arg(value = "<Amount>", context = "[0.01:*]") Double amount) {
-        target.addMoney(BigDecimal.valueOf(amount));
+        FEPlayerData wallet = walletOf(target);
+        wallet.addMoney(BigDecimal.valueOf(amount));
 
         GIVE_SUCCESS
                 .addPlaceholder("receiver", target.getName())
                 .addPlaceholder("amount", FCMathUtil.toString(amount))
-                .addPlaceholder("balance", target.getMoneyFormatted())
+                .addPlaceholder("balance", wallet.getMoneyFormatted())
                 .send(sender);
 
         if (ConfigManager.settings.getNotification().isNotifyOnEcoGive() && target.isPlayerOnline()) {
             MONEY_WAS_ADDED_TO_YOUR_ACCOUNT
                     .addPlaceholder("amount", FCMathUtil.toString(amount))
-                    .addPlaceholder("balance", target.getMoneyFormatted())
+                    .addPlaceholder("balance", wallet.getMoneyFormatted())
                     .send(target.getPlayer());
         }
     }
@@ -88,32 +94,33 @@ public class CMDFinalEconomy {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bRemove uma quantidade específica de money de um jogador!")
             }
     )
-    public void take(FCommandSender sender, @Arg("<Player>") FEPlayerData target,
+    public void take(FCommandSender sender, @Arg("<Player>") PlayerData target,
                      @Arg(value = "<Amount>", context = "[0.01:*]") Double amount) {
 
+        FEPlayerData wallet = walletOf(target);
         BigDecimal value = BigDecimal.valueOf(amount);
 
-        if (!target.hasMoney(value)) {
+        if (!wallet.hasMoney(value)) {
             NOT_ENOUGH_MONEY
                     .addPlaceholder("payer", target.getName())
                     .addPlaceholder("amount", FCMathUtil.toString(amount))
-                    .addPlaceholder("balance", target.getMoneyFormatted())
+                    .addPlaceholder("balance", wallet.getMoneyFormatted())
                     .send(sender);
             return;
         }
 
-        target.removeMoney(value);
+        wallet.removeMoney(value);
 
         TAKE_SUCCESS
                 .addPlaceholder("payer", target.getName())
                 .addPlaceholder("amount", FCMathUtil.toString(amount))
-                .addPlaceholder("balance", target.getMoneyFormatted())
+                .addPlaceholder("balance", wallet.getMoneyFormatted())
                 .send(sender);
 
         if (ConfigManager.settings.getNotification().isNotifyOnEcoTake() && target.isPlayerOnline()) {
             MONEY_WAS_REMOVED_FROM_YOUR_ACCOUNT
                     .addPlaceholder("amount", FCMathUtil.toString(amount))
-                    .addPlaceholder("balance", target.getMoneyFormatted())
+                    .addPlaceholder("balance", wallet.getMoneyFormatted())
                     .send(target.getPlayer());
         }
     }
@@ -137,20 +144,21 @@ public class CMDFinalEconomy {
                     @FCLocale(lang = LocaleType.PT_BR, text = "§bDefina o saldo de um jogador para um valor específico!")
             }
     )
-    public void set(FCommandSender sender, @Arg("<Player>") FEPlayerData target,
+    public void set(FCommandSender sender, @Arg("<Player>") PlayerData target,
                     @Arg(value = "<Amount>", context = "[0:*]") Double amount) {
-        String oldBalance = target.getMoneyFormatted();
-        target.setMoney(BigDecimal.valueOf(amount));
+        FEPlayerData wallet = walletOf(target);
+        String oldBalance = wallet.getMoneyFormatted();
+        wallet.setMoney(BigDecimal.valueOf(amount));
 
         SET_SUCESS
                 .addPlaceholder("player", target.getName())
-                .addPlaceholder("balance", target.getMoneyFormatted())
+                .addPlaceholder("balance", wallet.getMoneyFormatted())
                 .send(sender);
 
         if (ConfigManager.settings.getNotification().isNotifyOnEcoSet() && target.isPlayerOnline()) {
             MONEY_WAS_SET_FOR_YOUR_ACCOUNT
                     .addPlaceholder("old_balance", oldBalance)
-                    .addPlaceholder("new_balance", target.getMoneyFormatted())
+                    .addPlaceholder("new_balance", wallet.getMoneyFormatted())
                     .send(target.getPlayer());
         }
     }
@@ -169,6 +177,12 @@ public class CMDFinalEconomy {
     )
     public void reload(FCommandSender sender) {
         ECPluginManager.reloadPlugin(sender, FEBootstrap.get().getPluginData());
+    }
+
+    /** The account row behind a named player. Resolved here rather than injected, so the same token
+     *  also answers the name and the online state every message below needs. */
+    private static FEPlayerData walletOf(PlayerData playerData) {
+        return playerData.getAccountSection(FEPlayerData.class).join();
     }
 
 }

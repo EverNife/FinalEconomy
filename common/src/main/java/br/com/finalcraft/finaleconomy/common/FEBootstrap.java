@@ -7,6 +7,7 @@ import br.com.finalcraft.finaleconomy.common.baltop.BaltopRanking;
 import br.com.finalcraft.finaleconomy.common.command.CMDBalanceTop;
 import br.com.finalcraft.finaleconomy.common.command.CommandRegisterer;
 import br.com.finalcraft.finaleconomy.common.config.ConfigManager;
+import br.com.finalcraft.finaleconomy.common.data.LegacyBalanceImporter;
 import br.com.finalcraft.finaleconomy.common.data.PlayerDataRegistry;
 import br.com.finalcraft.finaleconomy.common.placeholder.PlaceholderIntegration;
 
@@ -43,15 +44,15 @@ public interface FEBootstrap extends IECPluginBootstrap {
     /**
      * Commands are registered a tick late, after every other plugin has enabled, so that the aliases
      * this plugin shares with EssentialsEco ({@code /balance}, {@code /pay}, {@code /eco}) end up
-     * pointing here. Also the earliest point where the balance ranking can be read: the legacy import
-     * of a first boot runs on this same tick, ahead of it.
+     * pointing here. The core's read of the 2.x files runs on this same tick, ahead of it, which is
+     * why the amounts it landed are folded into the account rows before the ranking is read.
      */
     @Override
     default Runnable runOnFirstTick() {
         return () -> {
             getLog().info("Registering Commands...");
             CommandRegisterer.registerCommands(getPluginData());
-            BaltopRanking.refresh();
+            LegacyBalanceImporter.claimPending().thenRun(BaltopRanking::refresh);
         };
     }
 

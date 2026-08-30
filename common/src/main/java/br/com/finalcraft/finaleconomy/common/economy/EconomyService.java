@@ -16,9 +16,13 @@ import java.util.UUID;
  * shop calls {@code Economy.withdraw(...)} on the server thread, inside a click event, and the
  * signature has to hand back a number right there - there is no continuation to hang a
  * {@code thenAccept} on. The answer is not a scattered {@code join()}: it is having the data in
- * memory already, which is what {@code SectionLifecycle.PRELOADED} buys (see
- * {@code PlayerDataRegistry}). {@link #sectionOf(UUID)} is the single documented fallback for the
- * player who is not in the cache yet.</p>
+ * memory already, which is what an account row being resident while a member is online gives for
+ * free. {@link #sectionOf(UUID)} is the single documented fallback for the player who is not.</p>
+ *
+ * <p><b>The offline path costs a read.</b> An account row is released once the last member quits, and
+ * {@code AccountSectionConfiguration} has no lifecycle to override that - so paying an offline player
+ * resolves through storage on the calling thread. It is the one blocking read in this plugin and it
+ * is here, named, instead of scattered.</p>
  *
  * <p>Amounts are {@link BigDecimal} end to end, which is also what Vault 2 speaks; the outcome
  * travels as EverNifeCore's {@link EcoResponse}, carrying the amount and the resulting balance both
@@ -29,13 +33,12 @@ public class EconomyService {
     /**
      * That player's balance section, resolved without leaving this thread.
      *
-     * <p>Answers from the cache, which under {@code PRELOADED} holds every known player. The
-     * {@code join()} is the fallback for a player the collection does not have yet - a brand new
-     * account - and it is the only blocking read in this plugin.</p>
+     * <p>Answers from the cache while any member of the account is online. The {@code join()} is the
+     * fallback for everybody else, and it is the only blocking read in this plugin.</p>
      */
-    public static FEPlayerData sectionOf(UUID uuid) {
-        FEPlayerData loaded = PlayerController.getLoadedSection(uuid, FEPlayerData.class);
-        return loaded != null ? loaded : PlayerController.getPDSection(uuid, FEPlayerData.class).join();
+    public static FEPlayerData sectionOf(UUID playerUuid) {
+        FEPlayerData loaded = PlayerController.getLoadedAccountSection(playerUuid, FEPlayerData.class);
+        return loaded != null ? loaded : PlayerController.getAccountSection(playerUuid, FEPlayerData.class).join();
     }
 
     public static BigDecimal getBalance(UUID uuid) {

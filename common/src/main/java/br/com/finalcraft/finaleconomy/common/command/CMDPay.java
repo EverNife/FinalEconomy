@@ -8,6 +8,7 @@ import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.everylibs.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
+import br.com.finalcraft.evernifecore.playerdata.PlayerData;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 
 import java.math.BigDecimal;
@@ -30,9 +31,10 @@ public class CMDPay {
             aliases = {"fepay", "pay", "pagar"},
             permission = PermissionNodes.COMMAND_PAY
     )
-    public void pay(FPlayer player, FEPlayerData playerData, @Arg("<Player>") FEPlayerData target,
+    public void pay(FPlayer player, FEPlayerData playerData, @Arg("<Player>") PlayerData target,
                     @Arg(value = "<Amount>", context = "[0.01:*]") Double amount) {
 
+        FEPlayerData targetWallet = target.getAccountSection(FEPlayerData.class).join();
         BigDecimal value = BigDecimal.valueOf(amount);
 
         if (!playerData.hasMoney(value)) {
@@ -43,7 +45,7 @@ public class CMDPay {
         }
 
         playerData.removeMoney(value);
-        target.addMoney(value);
+        targetWallet.addMoney(value);
 
         PAY_SUCCESS_SENDER
                 .addPlaceholder("amount", FCMathUtil.toString(amount))
@@ -53,7 +55,7 @@ public class CMDPay {
         if (target.isPlayerOnline()) {
             PAY_SUCCESS_RECEIVER
                     .addPlaceholder("amount", FCMathUtil.toString(amount))
-                    .addPlaceholder("payer", playerData.getName())
+                    .addPlaceholder("payer", player.getName())
                     .send(target.getPlayer());
         }
     }

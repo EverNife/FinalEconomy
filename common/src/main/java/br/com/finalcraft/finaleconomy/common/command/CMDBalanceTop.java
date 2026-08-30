@@ -63,9 +63,10 @@ public class CMDBalanceTop {
                 .setFormatLine(BALTOP_LINE)
                 .setFormatFooter(BALTOP_FOOTER)
                 .theme(theme)
-                // The rows come straight from the backend and carry no PlayerData, so the built-in
-                // ${player} would answer null; the name is looked up from the stored uuid instead.
-                .addRowPlaceholder("player", row -> UUIDsController.getNameFromUUID(row.getUniqueId()))
+                // The rows come straight from the backend and carry no player at all - an account row
+                // knows its accountId and nothing else. The canonical id doubles as a member uuid, so
+                // it is what the name is looked up from.
+                .addRowPlaceholder("player", row -> UUIDsController.getNameFromUUID(row.getAccountId()))
                 .addRowPlaceholder("money_formatted", FEPlayerData::getMoneyFormatted)
                 .cache(CachePolicy.ttl(ConfigManager.settings.getPlaceholders().topCacheDuration()))
                 .build();

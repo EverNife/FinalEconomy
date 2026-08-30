@@ -26,7 +26,7 @@ public class BaltopRanking {
     private static final AtomicBoolean refreshing = new AtomicBoolean(false);
 
 
-    /** Every player ordered by balance, richest first. Possibly one cache-time stale, never blocking. */
+    /** Every account ordered by balance, richest first. Possibly one cache-time stale, never blocking. */
     public static List<FEPlayerData> current() {
         if (System.currentTimeMillis() - lastRefresh >= ConfigManager.settings.getPlaceholders().topCacheDuration().toMillis()) {
             refresh();
@@ -34,11 +34,14 @@ public class BaltopRanking {
         return ranking;
     }
 
-    /** That player's 1-based rank, or {@code null} when they are not in the ranking. */
-    public static Integer positionOf(UUID uuid) {
+    /**
+      * That account's 1-based rank, or {@code null} when it is not in the ranking. Keyed by account,
+      * not by player: linked identities share one wallet and therefore one position.
+      */
+    public static Integer positionOf(UUID accountId) {
         List<FEPlayerData> snapshot = current();
         for (int i = 0; i < snapshot.size(); i++) {
-            if (uuid.equals(snapshot.get(i).getUniqueId())) {
+            if (accountId.equals(snapshot.get(i).getAccountId())) {
                 return i + 1;
             }
         }

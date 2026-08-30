@@ -9,6 +9,7 @@ import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMessageUtil;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
+import br.com.finalcraft.evernifecore.playerdata.PlayerData;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 import br.com.finalcraft.finaleconomy.common.economy.EconomyService;
 
@@ -26,7 +27,7 @@ public class CMDBalance {
             aliases = {"febalance", "bal", "money", "balance"},
             permission = PermissionNodes.COMMAND_BALANCE
     )
-    public void balance(FCommandSender sender, HelpLine helpLine, @Arg("[Player]") FEPlayerData target) {
+    public void balance(FCommandSender sender, HelpLine helpLine, @Arg("[Player]") PlayerData target) {
 
         if (target != null) {
 
@@ -34,8 +35,9 @@ public class CMDBalance {
                 return;
             }
 
+            //the token names a player and the message says their name, so the wallet is read off them
             OTHER_BALANCE
-                    .addPlaceholder("balance", target.getMoneyFormatted())
+                    .addPlaceholder("balance", target.getAccountSection(FEPlayerData.class).join().getMoneyFormatted())
                     .addPlaceholder("target", target.getName())
                     .send(sender);
 
