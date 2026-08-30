@@ -7,6 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class FinalEconomyVault1 implements Economy {
 
     @Override
     public String format(double amount) {
-        return EconomyService.format(amount);
+        return EconomyService.format(BigDecimal.valueOf(amount));
     }
 
     // ------------------------------------------------------------------
@@ -104,12 +105,12 @@ public class FinalEconomyVault1 implements Economy {
     @Override
     public double getBalance(String playerName) {
         UUID uuid = uuidOf(playerName);
-        return uuid == null ? 0D : EconomyService.getBalance(uuid);
+        return uuid == null ? 0D : EconomyService.getBalance(uuid).doubleValue();
     }
 
     @Override
     public double getBalance(OfflinePlayer player) {
-        return EconomyService.getBalance(player.getUniqueId());
+        return EconomyService.getBalance(player.getUniqueId()).doubleValue();
     }
 
     @Override
@@ -125,12 +126,12 @@ public class FinalEconomyVault1 implements Economy {
     @Override
     public boolean has(String playerName, double amount) {
         UUID uuid = uuidOf(playerName);
-        return uuid != null && EconomyService.has(uuid, amount);
+        return uuid != null && EconomyService.has(uuid, BigDecimal.valueOf(amount));
     }
 
     @Override
     public boolean has(OfflinePlayer player, double amount) {
-        return EconomyService.has(player.getUniqueId(), amount);
+        return EconomyService.has(player.getUniqueId(), BigDecimal.valueOf(amount));
     }
 
     @Override
@@ -146,12 +147,12 @@ public class FinalEconomyVault1 implements Economy {
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double amount) {
         UUID uuid = uuidOf(playerName);
-        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.withdraw(uuid, amount));
+        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.withdraw(uuid, BigDecimal.valueOf(amount)));
     }
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
-        return responseOf(EconomyService.withdraw(player.getUniqueId(), amount));
+        return responseOf(EconomyService.withdraw(player.getUniqueId(), BigDecimal.valueOf(amount)));
     }
 
     @Override
@@ -167,12 +168,12 @@ public class FinalEconomyVault1 implements Economy {
     @Override
     public EconomyResponse depositPlayer(String playerName, double amount) {
         UUID uuid = uuidOf(playerName);
-        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.deposit(uuid, amount));
+        return uuid == null ? unknownPlayer(playerName) : responseOf(EconomyService.deposit(uuid, BigDecimal.valueOf(amount)));
     }
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
-        return responseOf(EconomyService.deposit(player.getUniqueId(), amount));
+        return responseOf(EconomyService.deposit(player.getUniqueId(), BigDecimal.valueOf(amount)));
     }
 
     @Override

@@ -16,7 +16,7 @@ import br.com.finalcraft.evernifecore.pageviewer.theme.PageTheme;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
 import br.com.finalcraft.finaleconomy.common.baltop.BaltopRanking;
 import br.com.finalcraft.finaleconomy.common.config.ConfigManager;
-import br.com.finalcraft.finaleconomy.common.config.FESettings;
+import br.com.finalcraft.finaleconomy.common.config.settings.BaltopSettings;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 
 public class CMDBalanceTop {
@@ -40,13 +40,13 @@ public class CMDBalanceTop {
      * cap, the chrome and the cache time are all read from config at build time.
      */
     public static void rebuild() {
-        FESettings settings = ConfigManager.settings;
+        BaltopSettings baltop = ConfigManager.settings.getBaltop();
 
         ClassicPageTheme theme = PageTheme.classic();
-        if (settings.isBaltopIncludeDayOfToday()) {
+        if (baltop.isIncludeDayOfToday()) {
             theme = theme.withDate();
         }
-        if (settings.isBaltopIncludeTotalUsersCount()) {
+        if (baltop.isIncludeTotalUsersCount()) {
             theme = theme.withTotalCount();
         }
 
@@ -54,11 +54,11 @@ public class CMDBalanceTop {
                 .id(PAGE_ID)
                 .source(BaltopRanking::current);
 
-        balTop = (settings.getBaltopMaxPages() > 0
-                ? limitStep.maxEntries(settings.getBaltopMaxPages() * FESettings.BALTOP_PAGE_SIZE)
+        balTop = (baltop.cappedRowCount() > 0
+                ? limitStep.maxEntries(baltop.cappedRowCount())
                 : limitStep.unlimitedEntries())
                 .orderBy(FEPlayerData::getMoney).descending()
-                .setPageSize(FESettings.BALTOP_PAGE_SIZE)
+                .setPageSize(BaltopSettings.PAGE_SIZE)
                 .setFormatHeader(BALTOP_PREFIX)
                 .setFormatLine(BALTOP_LINE)
                 .setFormatFooter(BALTOP_FOOTER)
@@ -67,7 +67,7 @@ public class CMDBalanceTop {
                 // ${player} would answer null; the name is looked up from the stored uuid instead.
                 .addRowPlaceholder("player", row -> UUIDsController.getNameFromUUID(row.getUniqueId()))
                 .addRowPlaceholder("money_formatted", FEPlayerData::getMoneyFormatted)
-                .cache(CachePolicy.ttl(settings.getTopCacheTime()))
+                .cache(CachePolicy.ttl(ConfigManager.settings.getPlaceholders().topCacheDuration()))
                 .build();
     }
 

@@ -15,12 +15,10 @@ import java.util.function.Function;
  * Registers this plugin's placeholders under the {@code finaleconomy} prefix - PlaceholderAPI on
  * Bukkit, the native integration on Hytale, same code.
  */
-public final class PlaceholderIntegration {
+public class PlaceholderIntegration {
 
     public static RegexReplacer<FEPlayerData> BALANCE_REPLACER;
 
-    private PlaceholderIntegration() {
-    }
 
     public static void initialize(ECPluginData ecPluginData) {
         BALANCE_REPLACER = EverNifeCore.getPlatform()

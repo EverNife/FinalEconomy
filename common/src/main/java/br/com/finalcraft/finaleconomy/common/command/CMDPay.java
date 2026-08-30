@@ -10,6 +10,8 @@ import br.com.finalcraft.everylibs.util.FCMathUtil;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 
+import java.math.BigDecimal;
+
 public class CMDPay {
 
     @FCLocale(lang = LocaleType.EN_US, text = "§e§l ▶ §cYou do not have enough money. Current balance: §e$${balance}")
@@ -31,15 +33,17 @@ public class CMDPay {
     public void pay(FPlayer player, FEPlayerData playerData, @Arg("<Player>") FEPlayerData target,
                     @Arg(value = "<Amount>", context = "[0.01:*]") Double amount) {
 
-        if (!playerData.hasMoney(amount)) {
+        BigDecimal value = BigDecimal.valueOf(amount);
+
+        if (!playerData.hasMoney(value)) {
             NOT_ENOUGH_MONEY
                     .addPlaceholder("balance", playerData.getMoneyFormatted())
                     .send(player);
             return;
         }
 
-        playerData.removeMoney(amount);
-        target.addMoney(amount);
+        playerData.removeMoney(value);
+        target.addMoney(value);
 
         PAY_SUCCESS_SENDER
                 .addPlaceholder("amount", FCMathUtil.toString(amount))

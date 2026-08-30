@@ -19,18 +19,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * and the price of freshness is that the ranking can lag by up to the cache time - which is what the
  * setting has always bought.</p>
  */
-public final class BaltopRanking {
+public class BaltopRanking {
 
     private static volatile List<FEPlayerData> ranking = Collections.emptyList();
     private static volatile long lastRefresh = 0L;
     private static final AtomicBoolean refreshing = new AtomicBoolean(false);
 
-    private BaltopRanking() {
-    }
 
     /** Every player ordered by balance, richest first. Possibly one cache-time stale, never blocking. */
     public static List<FEPlayerData> current() {
-        if (System.currentTimeMillis() - lastRefresh >= ConfigManager.settings.getTopCacheTime().toMillis()) {
+        if (System.currentTimeMillis() - lastRefresh >= ConfigManager.settings.getPlaceholders().topCacheDuration().toMillis()) {
             refresh();
         }
         return ranking;

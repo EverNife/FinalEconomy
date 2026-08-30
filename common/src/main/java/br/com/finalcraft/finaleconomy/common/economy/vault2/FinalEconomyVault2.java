@@ -53,7 +53,7 @@ public class FinalEconomyVault2 implements Economy {
 
     @Override
     public String format(BigDecimal amount) {
-        return EconomyService.format(amount.doubleValue());
+        return EconomyService.format(amount);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class FinalEconomyVault2 implements Economy {
 
     @Override
     public BigDecimal getBalance(String pluginName, UUID accountID) {
-        return BigDecimal.valueOf(EconomyService.getBalance(accountID));
+        return EconomyService.getBalance(accountID);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class FinalEconomyVault2 implements Economy {
 
     @Override
     public boolean has(String pluginName, UUID accountID, BigDecimal amount) {
-        return EconomyService.has(accountID, amount.doubleValue());
+        return EconomyService.has(accountID, amount);
     }
 
     @Override
@@ -201,7 +201,7 @@ public class FinalEconomyVault2 implements Economy {
 
     @Override
     public EconomyResponse withdraw(String pluginName, UUID accountID, BigDecimal amount) {
-        return responseOf(EconomyService.withdraw(accountID, amount.doubleValue()));
+        return responseOf(EconomyService.withdraw(accountID, amount));
     }
 
     @Override
@@ -216,7 +216,7 @@ public class FinalEconomyVault2 implements Economy {
 
     @Override
     public EconomyResponse deposit(String pluginName, UUID accountID, BigDecimal amount) {
-        return responseOf(EconomyService.deposit(accountID, amount.doubleValue()));
+        return responseOf(EconomyService.deposit(accountID, amount));
     }
 
     @Override

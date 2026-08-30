@@ -2,7 +2,7 @@ package br.com.finalcraft.finaleconomy.common.economy;
 
 import br.com.finalcraft.evernifecore.economy.EcoResponse;
 import br.com.finalcraft.evernifecore.playerdata.PlayerController;
-import br.com.finalcraft.everylibs.util.FCMathUtil;
+import br.com.finalcraft.finaleconomy.common.config.ConfigManager;
 import br.com.finalcraft.finaleconomy.common.data.FEPlayerData;
 
 import java.math.BigDecimal;
@@ -20,14 +20,11 @@ import java.util.UUID;
  * {@code PlayerDataRegistry}). {@link #sectionOf(UUID)} is the single documented fallback for the
  * player who is not in the cache yet.</p>
  *
- * <p>Amounts are {@code double} because that is what the balance is stored as; the outcome travels
- * as EverNifeCore's {@link EcoResponse}, which carries the amount and the resulting balance both
+ * <p>Amounts are {@link BigDecimal} end to end, which is also what Vault 2 speaks; the outcome
+ * travels as EverNifeCore's {@link EcoResponse}, carrying the amount and the resulting balance both
  * Vault generations need to build their own response.</p>
  */
-public final class EconomyService {
-
-    private EconomyService() {
-    }
+public class EconomyService {
 
     /**
      * That player's balance section, resolved without leaving this thread.
@@ -41,43 +38,43 @@ public final class EconomyService {
         return loaded != null ? loaded : PlayerController.getPDSection(uuid, FEPlayerData.class).join();
     }
 
-    public static double getBalance(UUID uuid) {
+    public static BigDecimal getBalance(UUID uuid) {
         return sectionOf(uuid).getMoney();
     }
 
-    public static boolean has(UUID uuid, double amount) {
+    public static boolean has(UUID uuid, BigDecimal amount) {
         return sectionOf(uuid).hasMoney(amount);
     }
 
     /** Takes {@code amount}, or refuses without moving anything when the balance does not cover it. */
-    public static EcoResponse withdraw(UUID uuid, double amount) {
+    public static EcoResponse withdraw(UUID uuid, BigDecimal amount) {
         FEPlayerData section = sectionOf(uuid);
 
-        if (amount < 0) {
-            return EcoResponse.invalidAmount(BigDecimal.valueOf(amount));
+        if (amount.signum() < 0) {
+            return EcoResponse.invalidAmount(amount);
         }
         if (!section.hasMoney(amount)) {
-            return EcoResponse.insufficientFunds(BigDecimal.valueOf(amount), BigDecimal.valueOf(section.getMoney()));
+            return EcoResponse.insufficientFunds(amount, section.getMoney());
         }
 
         section.removeMoney(amount);
-        return EcoResponse.success(BigDecimal.valueOf(amount), BigDecimal.valueOf(section.getMoney()));
+        return EcoResponse.success(amount, section.getMoney());
     }
 
     /** Adds {@code amount}; zero succeeds as a no-op. */
-    public static EcoResponse deposit(UUID uuid, double amount) {
+    public static EcoResponse deposit(UUID uuid, BigDecimal amount) {
         FEPlayerData section = sectionOf(uuid);
 
-        if (amount < 0) {
-            return EcoResponse.invalidAmount(BigDecimal.valueOf(amount));
+        if (amount.signum() < 0) {
+            return EcoResponse.invalidAmount(amount);
         }
 
         section.addMoney(amount);
-        return EcoResponse.success(BigDecimal.valueOf(amount), BigDecimal.valueOf(section.getMoney()));
+        return EcoResponse.success(amount, section.getMoney());
     }
 
     /** How this economy renders a raw amount for another plugin. */
-    public static String format(double amount) {
-        return FCMathUtil.toString(amount);
+    public static String format(BigDecimal amount) {
+        return ConfigManager.settings.getMoneyFormat().format(amount);
     }
 }

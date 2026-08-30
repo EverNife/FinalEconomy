@@ -8,7 +8,7 @@ import br.com.finalcraft.evernifecore.playerdata.storage.SectionLifecycle;
 /**
  * The ONE place this plugin declares its player data - called by both platform bootstraps.
  */
-public final class PlayerDataRegistry {
+public class PlayerDataRegistry {
 
     /** The section's stable storage identity: it, not the class name, names the collection. */
     public static final String SECTION_ID = "finaleconomy";
@@ -16,8 +16,6 @@ public final class PlayerDataRegistry {
     /** The 2.x per-player YAML root key this plugin owned, imported once on the first 3.x boot. */
     private static final String LEGACY_ROOT_KEY = "FinalEconomy";
 
-    private PlayerDataRegistry() {
-    }
 
     public static void registerAll(ECPluginData ecPluginData) {
         PlayerController.registerPDSectionCfg(PDSectionConfiguration

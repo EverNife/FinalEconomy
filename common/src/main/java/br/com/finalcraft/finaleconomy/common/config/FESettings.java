@@ -1,152 +1,60 @@
 package br.com.finalcraft.finaleconomy.common.config;
 
 import br.com.finalcraft.everyconfig.config.Config;
-import br.com.finalcraft.evernifecore.EverNifeCore;
+import br.com.finalcraft.finaleconomy.common.config.settings.BaltopSettings;
+import br.com.finalcraft.finaleconomy.common.config.settings.MoneySettings;
+import br.com.finalcraft.finaleconomy.common.config.settings.NotificationSettings;
+import br.com.finalcraft.finaleconomy.common.config.settings.PlaceholderSettings;
 
 import java.text.NumberFormat;
-import java.time.Duration;
-import java.util.Locale;
 
 /**
- * An immutable settings model, read from {@code config.yml} with
- * {@code getOrSetValueIfAbsent(path, default, comment)} - the commented file is generated from this
- * code, so a default and its documentation can never drift apart.
+ * The whole of {@code config.yml}, as one typed object per block of it.
+ *
+ * <p>Each block is a POJO bound with {@code getOrMergeValue}, which is merge semantics rather than
+ * set-if-absent: a key already in the file wins, and only the keys the file lacks are seeded, with
+ * their comment. A setting added in a later release therefore appears on upgrade without resetting
+ * what the admin already tuned - which key-by-key reading could not promise for a block that existed
+ * but was missing one entry.</p>
  */
 public class FESettings {
 
-    /** How many entries one page of {@code /baltop} holds; the {@code maxPages} setting counts in these. */
-    public static final int BALTOP_PAGE_SIZE = 10;
+    private final MoneySettings money;
+    private final BaltopSettings baltop;
+    private final NotificationSettings notification;
+    private final PlaceholderSettings placeholders;
+    private final NumberFormat moneyFormat;
 
-    private final NumberFormat moneyFormatter;
-    private final Duration topCacheTime;
-    private final boolean baltopIncludeTotalUsersCount;
-    private final boolean baltopIncludeDayOfToday;
-    private final int baltopMaxPages;
-    private final boolean notifyOnEcoGive;
-    private final boolean notifyOnEcoTake;
-    private final boolean notifyOnEcoSet;
-
-    private FESettings(NumberFormat moneyFormatter, Duration topCacheTime,
-                       boolean baltopIncludeTotalUsersCount, boolean baltopIncludeDayOfToday,
-                       int baltopMaxPages, boolean notifyOnEcoGive, boolean notifyOnEcoTake,
-                       boolean notifyOnEcoSet) {
-        this.moneyFormatter = moneyFormatter;
-        this.topCacheTime = topCacheTime;
-        this.baltopIncludeTotalUsersCount = baltopIncludeTotalUsersCount;
-        this.baltopIncludeDayOfToday = baltopIncludeDayOfToday;
-        this.baltopMaxPages = baltopMaxPages;
-        this.notifyOnEcoGive = notifyOnEcoGive;
-        this.notifyOnEcoTake = notifyOnEcoTake;
-        this.notifyOnEcoSet = notifyOnEcoSet;
+    public FESettings(Config config) {
+        this.money = config.getOrMergeValue("Settings.Money", new MoneySettings());
+        this.baltop = config.getOrMergeValue("Settings.Baltop", new BaltopSettings());
+        this.notification = config.getOrMergeValue("Settings.Notification", new NotificationSettings());
+        this.placeholders = config.getOrMergeValue("Settings.Placeholders", new PlaceholderSettings());
+        this.moneyFormat = money.newFormatter();
     }
 
-    public static FESettings load(Config config) {
+    public MoneySettings getMoney() {
+        return money;
+    }
 
-        String moneyFormatLocale = config.getOrSetValueIfAbsent(
-                "Settings.moneyFormatLocale",
-                "en-US",
-                "This means the way the number will be formatted, for example:"
-                        + "\non 'en-US' the value of 10000000 will be 10,000,000"
-                        + "\non 'pt-BR' the value of 10000000 will be 10.000.000"
-        );
+    public BaltopSettings getBaltop() {
+        return baltop;
+    }
 
-        int topTimeCache = config.getOrSetValueIfAbsent(
-                "Settings.Placeholders.topTimeCache",
-                5,
-                "The time in seconds that the top list will be cached."
-                        + "\nThis is to prevent the server from lagging when the top list is requested too often."
-                        + "\nRecommended to keep at least in 1 second!"
-        );
+    public NotificationSettings getNotification() {
+        return notification;
+    }
 
-        boolean includeTotalUsersCount = config.getOrSetValueIfAbsent(
-                "Settings.Baltop.includeTotalUsersCount",
-                true,
-                "If true, the baltop command will include the total users count on the first line!"
-        );
-
-        boolean includeDayOfToday = config.getOrSetValueIfAbsent(
-                "Settings.Baltop.includeDayOfToday",
-                true,
-                "If true, the baltop command will include the [day of today] on the second line!"
-        );
-
-        int maxPages = config.getOrSetValueIfAbsent(
-                "Settings.Baltop.maxPages",
-                -1,
-                "Defines how many pages will be shown on the baltop command, if -1, will show all pages!"
-        );
-
-        boolean notifyOnEcoGive = config.getOrSetValueIfAbsent(
-                "Settings.Notification.notifyOnEcoGive",
-                false,
-                "If true, will notify the player when he receives money from the command"
-                        + "\n'/eco give <Player>'! If false, will not notify the player!"
-        );
-
-        boolean notifyOnEcoTake = config.getOrSetValueIfAbsent(
-                "Settings.Notification.notifyOnEcoTake",
-                false,
-                "If true, will notify the player when he loses money from the command"
-                        + "\n'/eco take <Player>'! If false, will not notify the player!"
-        );
-
-        boolean notifyOnEcoSet = config.getOrSetValueIfAbsent(
-                "Settings.Notification.notifyOnEcoSet",
-                false,
-                "If true, will notify the player when his money is set from the command"
-                        + "\n'/eco set <Player>'! If false, will not notify the player!"
-        );
-
-        return new FESettings(moneyFormatterOf(moneyFormatLocale), Duration.ofSeconds(Math.max(1, topTimeCache)),
-                includeTotalUsersCount, includeDayOfToday, maxPages,
-                notifyOnEcoGive, notifyOnEcoTake, notifyOnEcoSet);
+    public PlaceholderSettings getPlaceholders() {
+        return placeholders;
     }
 
     /**
-     * {@code Locale.forLanguageTag} reads IETF tags ({@code pt-BR}), so the underscore spelling this
-     * setting used to document parses to no language at all instead of failing - hence the rewrite
-     * and the emptiness check, which is what "unparseable" really looks like here.
+     * The formatter every balance is rendered through - resolved once per load, because building one
+     * per placeholder resolve would put a locale lookup on the server thread.
      */
-    private static NumberFormat moneyFormatterOf(String languageTag) {
-        Locale locale = Locale.forLanguageTag(languageTag.replace('_', '-'));
-        if (locale.getLanguage().isEmpty()) {
-            EverNifeCore.getLog().warning("No Locale found for [{}], using 'en-US' instead!", languageTag);
-            locale = Locale.forLanguageTag("en-US");
-        }
-        return NumberFormat.getNumberInstance(locale);
+    public NumberFormat getMoneyFormat() {
+        return moneyFormat;
     }
 
-    public NumberFormat getMoneyFormatter() {
-        return moneyFormatter;
-    }
-
-    /** How long one read of the balance ranking stays good for. */
-    public Duration getTopCacheTime() {
-        return topCacheTime;
-    }
-
-    public boolean isBaltopIncludeTotalUsersCount() {
-        return baltopIncludeTotalUsersCount;
-    }
-
-    public boolean isBaltopIncludeDayOfToday() {
-        return baltopIncludeDayOfToday;
-    }
-
-    /** Pages of {@link #BALTOP_PAGE_SIZE} entries the ranking is capped at; zero or less means no cap. */
-    public int getBaltopMaxPages() {
-        return baltopMaxPages;
-    }
-
-    public boolean isNotifyOnEcoGive() {
-        return notifyOnEcoGive;
-    }
-
-    public boolean isNotifyOnEcoTake() {
-        return notifyOnEcoTake;
-    }
-
-    public boolean isNotifyOnEcoSet() {
-        return notifyOnEcoSet;
-    }
 }
