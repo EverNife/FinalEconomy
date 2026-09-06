@@ -2,7 +2,7 @@ package br.com.finalcraft.finaleconomy.minecraft;
 
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.evernifecore.minecraft.ecplugin.ECBukkitPlugin;
-import br.com.finalcraft.finaleconomy.common.FEBootstrap;
+import br.com.finalcraft.finaleconomy.common.FinalEconomy;
 import br.com.finalcraft.finaleconomy.minecraft.vault.FinalEconomyVault1;
 import br.com.finalcraft.finaleconomy.minecraft.vault.VaultUnlockedIntegration;
 import net.milkbowl.vault.economy.Economy;
@@ -10,14 +10,14 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 /**
- * Bukkit entry point. The shared wiring lives in {@link FEBootstrap}; only publishing this plugin as
+ * Bukkit entry point. The shared wiring lives in {@link FinalEconomy}; only publishing this plugin as
  * the server's economy is Bukkit-specific.
  */
 @ECPlugin(
         spigotID = "97740",
         bstatsID = "13365"
 )
-public class FinalEconomyBukkitPlugin extends ECBukkitPlugin implements FEBootstrap {
+public class FinalEconomyBukkitPlugin extends ECBukkitPlugin implements FinalEconomy {
 
     private final FinalEconomyVault1 vaultEconomy = new FinalEconomyVault1();
 

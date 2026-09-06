@@ -16,12 +16,12 @@ import br.com.finalcraft.finaleconomy.common.placeholder.PlaceholderIntegration;
  * Each platform main class implements this on top of its platform base class and adds its own
  * extras through {@code onECPluginEnablePost()}.
  */
-public interface FEBootstrap extends IECPluginBootstrap {
+public interface FinalEconomy extends IECPluginBootstrap {
 
-    ECBootstrap<FEBootstrap> INSTANCE = ECBootstrap.of(FEBootstrap.class);
+    ECBootstrap<FinalEconomy> INSTANCE = ECBootstrap.of(FinalEconomy.class);
 
     /** The plugin running on this server, whatever the platform, or {@code null} while there is none. */
-    static FEBootstrap get() {
+    static FinalEconomy get() {
         return INSTANCE.get();
     }
 

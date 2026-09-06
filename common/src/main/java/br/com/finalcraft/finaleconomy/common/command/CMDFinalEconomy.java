@@ -8,7 +8,7 @@ import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.everylibs.util.FCMathUtil;
-import br.com.finalcraft.finaleconomy.common.FEBootstrap;
+import br.com.finalcraft.finaleconomy.common.FinalEconomy;
 import br.com.finalcraft.finaleconomy.common.PermissionNodes;
 import br.com.finalcraft.finaleconomy.common.config.ConfigManager;
 import br.com.finalcraft.evernifecore.playerdata.PlayerData;
@@ -176,7 +176,7 @@ public class CMDFinalEconomy {
             }
     )
     public void reload(FCommandSender sender) {
-        ECPluginManager.reloadPlugin(sender, FEBootstrap.get().getPluginData());
+        ECPluginManager.reloadPlugin(sender, FinalEconomy.get().getPluginData());
     }
 
     /** The account row behind a named player. Resolved here rather than injected, so the same token
